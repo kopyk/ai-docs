@@ -15,10 +15,40 @@ It also has a **Projects** page (including [ask-my-docs](https://github.com/kopy
 |------|----------|
 | `docs/ai/`, `docs/defense/` | The writing samples (Markdown) |
 | `src/pages/` | Landing page (`index.js`), Projects, and About |
-| `src/css/custom.css` | Design tokens and theme overrides (light and dark) |
+| `src/css/custom.css` | Design tokens, theme overrides (light and dark), and the responsive layout rules |
+| `src/theme/` | Two small ejected theme components (see [Swizzled components](#swizzled-components)) |
+| `src/plugins/rehype-scroll-regions.mjs` | Build-time plugin that wraps tables and code blocks in labelled scroll regions |
 | `sidebars.js` | The two docs sidebars |
-| `static/` | Favicon, `CNAME`, and `.nojekyll` |
+| `static/` | Favicons, social card, `robots.txt`, web manifest, `CNAME`, and `.nojekyll` |
 | `.github/workflows/deploy.yml` | Build and deploy to GitHub Pages |
+
+## Responsive layout
+
+Desktop and mobile use different layouts with the same tokens and principles. Breakpoints:
+
+| Width | Layout |
+|-------|--------|
+| ≤ 639px | Phone: one column, 16px gutter, full-bleed code blocks, landing cards as compact rows |
+| 640–996px | Tablet: same mobile shell, content capped at 720px, cards 2-up |
+| 997–1199px | Small desktop: 248px sidebar and the article; "On this page" is a bar at the top of the article |
+| ≥ 1100px | Landing page: two-column hero with a model-card excerpt, AI samples as a bento grid |
+| ≥ 1200px | Desktop: 280px sidebar, article up to 760px, 224px "On this page" rail |
+
+Below 1200px, "On this page" is a sticky 44px bar under the navbar. It opens a list over the
+article; Esc, choosing a section, or clicking outside closes it.
+
+Docusaurus switches between the drawer and the sidebar at 996/997px, and its CSS module class names
+are hashed, so `custom.css` matches them with `[class*='…']`. After upgrading Docusaurus, rebuild and
+check the 997–1199px range (the TOC override) and the mobile search box.
+
+## Swizzled components
+
+Only two small components are ejected. Re-check them when upgrading Docusaurus.
+
+| Component | Why |
+|-----------|-----|
+| `TOCCollapsible` | Adds `aria-expanded`/`aria-controls` to the "On this page" toggle, closes the list on Esc (returning focus to the toggle), on a link, or on an outside click, and highlights the current section. The stock component has none of these. |
+| `NotFound` (and `NotFound/Content`) | A 404 page in the site's design, with a search box and links to each section, and `noindex`. |
 
 ## Local development
 

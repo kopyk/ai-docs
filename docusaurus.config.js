@@ -2,6 +2,7 @@
 // See: https://docusaurus.io/docs/api/docusaurus-config
 
 import {themes as prismThemes} from 'prism-react-renderer';
+import rehypeScrollRegions from './src/plugins/rehype-scroll-regions.mjs';
 
 /** @type {import('@docusaurus/types').Config} */
 const config = {
@@ -45,6 +46,18 @@ const config = {
   headTags: [
     {
       tagName: 'link',
+      attributes: {rel: 'icon', href: '/favicon.ico', sizes: '32x32'},
+    },
+    {
+      tagName: 'link',
+      attributes: {rel: 'apple-touch-icon', href: '/apple-touch-icon.png'},
+    },
+    {
+      tagName: 'link',
+      attributes: {rel: 'manifest', href: '/site.webmanifest'},
+    },
+    {
+      tagName: 'link',
       attributes: {rel: 'preconnect', href: 'https://fonts.googleapis.com'},
     },
     {
@@ -66,13 +79,20 @@ const config = {
           routeBasePath: 'docs',
           sidebarPath: './sidebars.js',
           showLastUpdateTime: true,
+          rehypePlugins: [rehypeScrollRegions],
+        },
+        pages: {
+          rehypePlugins: [rehypeScrollRegions],
         },
         blog: false,
         theme: {
           customCss: './src/css/custom.css',
         },
         sitemap: {
-          changefreq: 'monthly',
+          lastmod: 'date',
+          changefreq: null,
+          priority: null,
+          ignorePatterns: ['/search', '/search/**'],
         },
       }),
     ],
@@ -87,7 +107,7 @@ const config = {
         indexBlog: false,
         docsRouteBasePath: 'docs',
         highlightSearchTermsOnTargetPage: false,
-        searchBarShortcutHint: false,
+        searchBarShortcutHint: true,
       }),
     ],
   ],
@@ -95,6 +115,7 @@ const config = {
   themeConfig:
     /** @type {import('@docusaurus/preset-classic').ThemeConfig} */
     ({
+      image: 'img/social-card.png',
       metadata: [
         {
           name: 'description',
@@ -106,6 +127,21 @@ const config = {
           content:
             'technical writing, AI documentation, developer documentation, model card, RAG, API reference, LLM evaluation, Jordan Yan',
         },
+        {name: 'author', content: 'Jordan Yan'},
+        {property: 'og:type', content: 'website'},
+        {property: 'og:site_name', content: 'Jordan Yan · AI Documentation'},
+        {property: 'og:image:width', content: '1200'},
+        {property: 'og:image:height', content: '630'},
+        {
+          property: 'og:image:alt',
+          content: 'Jordan Yan: AI and developer documentation samples',
+        },
+        {
+          name: 'twitter:image:alt',
+          content: 'Jordan Yan: AI and developer documentation samples',
+        },
+        {name: 'theme-color', content: '#ffffff', media: '(prefers-color-scheme: light)'},
+        {name: 'theme-color', content: '#0f0f10', media: '(prefers-color-scheme: dark)'},
       ],
       colorMode: {
         respectPrefersColorScheme: true,

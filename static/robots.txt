@@ -1,0 +1,7 @@
+# https://ai.jordanyan.com/robots.txt
+User-agent: *
+Allow: /
+# Internal search result pages and the search index aren't content.
+Disallow: /search
+
+Sitemap: https://ai.jordanyan.com/sitemap.xml

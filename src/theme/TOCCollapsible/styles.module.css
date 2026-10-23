@@ -1,0 +1,17 @@
+/*
+ * Ejected from @docusaurus/theme-classic 3.9.2 with the upstream rules trimmed.
+ * The bar and panel are styled in src/css/custom.css (".theme-doc-toc-mobile"),
+ * next to the other responsive layout rules.
+ */
+
+.tocCollapsible {
+  margin: 0 0 1.5rem;
+}
+
+.tocCollapsibleContent a {
+  display: block;
+}
+
+.tocCollapsibleExpanded {
+  transform: none;
+}
