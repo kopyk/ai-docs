@@ -242,7 +242,7 @@ export default function Home() {
             id="defense-aerospace"
             eyebrow="Defense & aerospace"
             title="Write for high-stakes systems"
-            intro="Technical manual and interface documentation that follows military standards."
+            intro="A work package that follows military standards and an interface control document with a verified byte layout."
             items={defenseDocs}
             layout="pair"
           />
