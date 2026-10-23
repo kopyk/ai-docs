@@ -1,39 +1,56 @@
 ---
 title: Projects
-description: Projects by Jordan Yan, including ask-my-docs, a retrieval-augmented Q&A tool for Markdown documentation built with the Claude API.
+description: Projects by Jordan Yan, including ask-my-docs (a tested and evaluated retrieval-augmented Q&A tool for Markdown documentation), the Gainwell Technologies EDI companion guides, and the Jungle Decision Framework documentation site.
 hide_table_of_contents: true
 wrapperClassName: mdx-wrapper page-with-aside
 ---
+
+import {ProofLabel} from '@site/src/components/AboutSample';
 
 <p className="eyebrow">Projects</p>
 
 # Projects
 
-Working tools and public documentation. Unlike the writing samples, these are real.
+Working tools and public documentation. Unlike the writing samples, these are real, and the
+ask-my-docs numbers below were re-checked by running the code before this page was published.
 
 <aside className="page-aside" aria-labelledby="projects-at-a-glance">
   <h2 id="projects-at-a-glance" className="page-aside__title">At a glance</h2>
   <dl className="page-facts">
-    <div><dt>ask-my-docs</dt><dd>Python 3.10+ and the Anthropic Python SDK</dd></div>
-    <div><dt>Retrieval check</dt><dd>Right file in the top 4 sections for 10 of 10 test questions</dd></div>
-    <div><dt>Companion guides</dt><dd>Gainwell Technologies internship, summer 2025</dd></div>
+    <div><dt>ask-my-docs</dt><dd>56 tests · CI · Recall@4 10/10</dd></div>
+    <div><dt>Gainwell Technologies</dt><dd>Technical Writer Intern, May–Aug 2025: wrote the 837I v1.3 update, edited and enhanced the 276/277 v1.1 guide</dd></div>
+    <div><dt>Jungle Decision Framework</dt><dd>Personal documentation site at [docs.jordanyan.com](https://docs.jordanyan.com)</dd></div>
     <div><dt>Source</dt><dd>[ask-my-docs](https://github.com/kopyk/ask-my-docs) and [companion guides](https://github.com/kopyk/gainwell-dhcf-companion-guides) on GitHub</dd></div>
   </dl>
 </aside>
 
 ## ask-my-docs
 
+<p className="proof-labels"><ProofLabel>56 tests · CI · Recall@4 10/10</ProofLabel></p>
+
 Ask questions about a folder of Markdown documentation and get answers from Claude, with sources.
 It's a small example of **retrieval-augmented generation (RAG)**: instead of asking a model to answer
 from memory, it first finds the relevant parts of your documents and gives the model only those.
 
 **Repository:** [github.com/kopyk/ask-my-docs](https://github.com/kopyk/ask-my-docs)  
-**Built with:** Python 3.10+, the Anthropic Python SDK  
+**Built with:** Python 3.10+, the Anthropic Python SDK, pytest, GitHub Actions, and the MCP Python SDK  
 **Tutorial:** [Build a Q&A bot over your docs](/docs/ai/rag-tutorial) walks through a simplified version.
 
 ```bash
 python ask.py path/to/docs "Your question here"
 ```
+
+### What's verified
+
+Each claim on the label above is backed by something in the repository that you can run.
+
+| Claim | Evidence |
+|-------|----------|
+| 56 tests pass | `pytest` runs `tests/test_ask.py`, `tests/test_evaluate.py` and `tests/test_mcp_server.py` without an API key or network: the Claude call is replaced by a stand-in. Last run: 56 passed. |
+| CI on every push | [GitHub Actions](https://github.com/kopyk/ask-my-docs/blob/main/.github/workflows/ci.yml) runs the tests and `evaluate.py --top-k 4 --min-recall 1.0` on Python 3.10 and 3.13, and fails the build if recall@4 drops below 10/10. |
+| Recall@4 10/10 | `evaluate.py` checks 10 questions against a frozen copy of the docs they were written for (14 files, 124 sections), so the number reproduces on any machine. Last run: 10/10. |
+| MCP server | `mcp_server.py` exposes retrieval as a `search_docs(question, top_k)` tool for Claude Code and Claude Desktop. It is tested through the SDK's client both in memory and over stdio as a subprocess. |
+| Changelog | `CHANGELOG.md` follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/); its versions and dates come from the commit history, not from memory. |
 
 ### How it works
 
@@ -65,10 +82,55 @@ so it runs without an API key.
   "invade." Embeddings, which match by meaning, are the next step.
 - **Markdown only.** PDFs and other formats aren't read.
 
-## DC DHCF EDI companion guides
+## Gainwell Technologies: DC Medicaid EDI companion guides
 
-HIPAA EDI companion guides published by Gainwell Technologies for DC Medicaid trading partners. During
-a summer 2025 internship, I authored the 837I Institutional Claims v1.3 update and edited the 276/277
-Claim Status v1.1 guide, adding segment tables and error code mappings.
+**Role:** Technical Writer Intern, Gainwell Technologies · May–Aug 2025 · Irving, TX
 
-**Repository:** [github.com/kopyk/gainwell-dhcf-companion-guides](https://github.com/kopyk/gainwell-dhcf-companion-guides)
+A case study from the internship. The guides are HIPAA EDI companion guides that Gainwell publishes for
+DC Medicaid trading partners; the two I worked on are linked at the end.
+
+### Problem
+
+The Washington, D.C. EDI team's companion guides had to be written and revised under aggressive
+deadlines, consolidating contributions from 20+ subject-matter experts while maintaining HIPAA and
+ASC X12 compliance. Vendor onboarding questions were the measure of whether the guides were doing
+their job.
+
+### What I did
+
+- Wrote the 837I v1.3 update and edited and enhanced the 276/277 v1.1 guide.
+- Wrote and revised 6 companion guides for the Washington, D.C. EDI team in total.
+- Contributed to an 80-page Project Management Plan and Software Design Document.
+- Consolidated 20+ SME contributions into final deliverables under aggressive deadlines while
+  maintaining HIPAA and ASC X12 compliance.
+- Designed and presented an interactive Power BI vendor-tracking dashboard to 15+ stakeholders.
+- Reformatted the 276/277 guide into a cited, scannable Markdown version.
+
+### Outcome
+
+- Vendor onboarding questions fell by about 30%.
+- The Project Management Plan and Software Design Document became the team's permanent SOP for EDI
+  workflows.
+- The Power BI dashboard was adopted for ongoing project monitoring.
+- The 837I v1.3 and 276/277 v1.1 guides are published on Gainwell's site.
+
+### Documents
+
+- [837I FFS Claims Companion Guide v1.3 (PDF, Gainwell)](https://www.gainwelltechnologies.com/wp-content/uploads/2025/07/DC_837I-FFS-Claims-Companion-Guide-v1.3.pdf)
+- [276/277 FFS Claims Companion Guide v1.1 (PDF, Gainwell)](https://www.gainwelltechnologies.com/wp-content/uploads/2025/07/DC_276_277FFS-FFS-Claims-Companion-Guide-v1.1.pdf)
+- [276/277 guide as cited, scannable Markdown](https://github.com/kopyk/gainwell-dhcf-companion-guides/blob/main/276-277-enhanced.md)
+- [Repository: kopyk/gainwell-dhcf-companion-guides](https://github.com/kopyk/gainwell-dhcf-companion-guides)
+
+## Jungle Decision Framework
+
+A personal documentation project: a decision-making framework for jungling in League of Legends,
+written as a documentation site rather than a guide. It covers macro play, tempo and information
+instead of champion mechanics, and it is organized so a reader can start with simple, repeatable
+actions and scale up: foundations, decision rules, a decision tree, worked examples, common
+mistakes, and a glossary.
+
+**Site:** [docs.jordanyan.com](https://docs.jordanyan.com) (built with Docusaurus)
+
+It also serves as the test corpus for ask-my-docs: the 10 evaluation questions were written against a
+frozen snapshot of that site's docs folder, so the Recall@4 result above is measured on documentation
+I wrote.

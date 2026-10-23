@@ -1,0 +1,29 @@
+# Jordan Yan · AI Documentation
+
+> Technical writing samples by Jordan Yan: an AI model card, a RAG tutorial, an API reference and an LLM evaluation rubric, plus a defense maintenance work package and an interface control document. All samples are original work; the systems, part numbers and data in them are fictional. The projects page describes real work: ask-my-docs (a tested, evaluated RAG tool), the Gainwell Technologies EDI companion guides, and the Jungle Decision Framework documentation site.
+
+Every sample opens with an "About this sample" box (audience, document type and standard, approach, how it was checked). The checks run in GitHub Actions on every push: the tutorial's code is executed, the ICD byte layout and the rubric's math are recomputed, and the OpenAPI file is linted and compared with the API reference page. Source: https://github.com/kopyk/ai-docs
+
+## AI documentation
+
+- [Model card: SKYSWEEP FOD Detector](https://ai.jordanyan.com/docs/ai/model-card): Intended use, per-condition performance, training data, failure modes and mitigations for a fictional runway debris detector, mapped to the DoD AI Ethical Principles and the NIST AI RMF 1.0.
+- [Tutorial: build a Q&A bot over your docs](https://ai.jordanyan.com/docs/ai/rag-tutorial): Step-by-step retrieval-augmented generation in Python with the Claude API; the code blocks are tested in CI.
+- [API reference: POST /v1/classify](https://ai.jordanyan.com/docs/ai/api-reference): Request and response fields, examples in curl, Python and JavaScript, errors, and rate limits for a fictional document-classification endpoint, with a matching OpenAPI 3.1 file.
+- [LLM evaluation rubric: documentation Q&A](https://ai.jordanyan.com/docs/ai/eval-rubric): Pass/fail grading criteria, test-set design, a scored example, and results reported by question type.
+
+## Defense and aerospace
+
+- [Maintenance procedure: UAS propeller replacement](https://ai.jordanyan.com/docs/defense/maintenance-procedure): A MIL-STD-40051-2 work package with MIL-STD-38784B WARNING, CAUTION and NOTE advisories, prerequisites, numbered steps, and follow-on maintenance for a fictional small UAS.
+- [Interface control document: air vehicle status message](https://ai.jordanyan.com/docs/defense/interface-control-document): Byte-level layout of a fictional 32-byte telemetry message with units, scale, ranges, an enumeration, a bitfield, and requirements traceability.
+
+## Projects and about
+
+- [Projects](https://ai.jordanyan.com/projects): ask-my-docs (56 tests, CI, Recall@4 10/10, MCP server, changelog), a Gainwell Technologies EDI companion-guide case study with links to the published PDFs, and the Jungle Decision Framework site.
+- [About](https://ai.jordanyan.com/about): Background, education, work status, how the site is built and checked, and contact details.
+
+## Optional
+
+- [OpenAPI file for the sample API](https://ai.jordanyan.com/openapi/atlas-classify.yaml): OpenAPI 3.1 YAML for the fictional Atlas /v1/classify endpoint; linted with Redocly CLI in CI.
+- [Sitemap](https://ai.jordanyan.com/sitemap.xml): Every page on the site.
+- [Portfolio](https://www.jordanyan.com): Jordan Yan's main portfolio site.
+- [GitHub](https://github.com/kopyk): Source for ask-my-docs, this site, and the companion guides.

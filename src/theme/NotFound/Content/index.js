@@ -24,7 +24,7 @@ const destinations = [
   {
     to: '/projects',
     eyebrow: 'Projects',
-    title: 'ask-my-docs and the DC DHCF companion guides',
+    title: 'ask-my-docs, the Gainwell companion guides, and the Jungle Decision Framework',
   },
   {
     to: '/about',
