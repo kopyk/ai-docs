@@ -48,6 +48,8 @@ Requests without a valid key return `401 unauthorized`.
 
 ## Request body
 
+<div className="text-col-4">
+
 | Field | Type | Required | Description |
 |-------|------|----------|-------------|
 | `text` | string | Yes | The document to classify. 1 to 100,000 characters. |
@@ -55,6 +57,8 @@ Requests without a valid key return `401 unauthorized`.
 | `multi_label` | boolean | No | If `true`, the document can match more than one label. Default: `false`. |
 | `threshold` | number | No | Minimum confidence (0.0–1.0) for a label to count as a match. Default: `0.5`. |
 | `explain` | boolean | No | If `true`, include a one-sentence reason for each match. Default: `false`. |
+
+</div>
 
 ## Example request
 
@@ -155,11 +159,13 @@ for (const match of result.matches) {
     "propulsion": 0.02
   },
   "model": "atlas-classify-2",
-  "usage": { "input_characters": 82 }
+  "usage": { "input_characters": 81 }
 }
 ```
 
 ## Response fields
+
+<div className="text-col-3">
 
 | Field | Type | Description |
 |-------|------|-------------|
@@ -172,12 +178,16 @@ for (const match of result.matches) {
 | `model` | string | The model version that produced the result. |
 | `usage.input_characters` | integer | Characters billed for this request. |
 
+</div>
+
 :::tip Interpreting confidence
 Confidence scores rank labels **for this request only**. A score of 0.94 does not mean the result is
 correct 94% of the time. To set a threshold for production, test the endpoint on your own labeled examples.
 :::
 
 ## Errors
+
+<div className="text-col-4">
 
 | HTTP status | `error.type` | Cause | What to do |
 |-------------|--------------|-------|------------|
@@ -186,6 +196,8 @@ correct 94% of the time. To set a threshold for production, test the endpoint on
 | 413 | `text_too_long` | `text` is over 100,000 characters | Split the document and classify each part |
 | 429 | `rate_limited` | Too many requests | Wait for the time in the `Retry-After` header, then retry |
 | 500 | `server_error` | Temporary problem on our side | Retry with exponential backoff |
+
+</div>
 
 Error responses use this shape:
 

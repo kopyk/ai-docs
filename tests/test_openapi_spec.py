@@ -4,10 +4,13 @@ Parses the tables and examples in docs/ai/api-reference.md and compares them
 with static/openapi/atlas-classify.yaml: the endpoint and server, the
 authentication scheme, every request field (type, required, limits, default),
 every response field, every error status and type, the rate-limit headers, the
-rate-limit table, and the example response. Redocly CLI lints the file
-separately in CI; this test is about the content matching the prose.
+rate-limit table, the example response, and the three example requests (curl,
+Python and JavaScript), which must all send the spec's request example and read
+only response fields the spec defines. Redocly CLI lints the file separately in
+CI; this test is about the content matching the prose.
 """
 
+import ast
 import json
 import re
 
@@ -187,11 +190,58 @@ def test_example_response_in_the_spec_is_the_one_on_the_page(doc, spec, operatio
     assert set(schema["required"]) <= set(page_example) <= set(schema["properties"])
 
 
-def test_example_request_uses_only_documented_fields(doc, spec, operation):
+def curl_payload(doc):
     curl = fenced_blocks(doc, "bash")[0]
-    payload = json.loads(curl[curl.index("-d '") + 4 : curl.rindex("'")])
+    return json.loads(curl[curl.index("-d '") + 4 : curl.rindex("'")])
+
+
+def spec_request_example(spec, operation):
+    examples = operation["requestBody"]["content"]["application/json"]["examples"]
+    return resolve(spec, next(iter(examples.values())))["value"]
+
+
+def test_example_request_uses_only_documented_fields(doc, spec, operation):
+    payload = curl_payload(doc)
     schema = resolve(spec, operation["requestBody"]["content"]["application/json"]["schema"])
     assert set(payload) <= set(schema["properties"])
     assert set(schema["required"]) <= set(payload)
-    spec_example = resolve(spec, next(iter(operation["requestBody"]["content"]["application/json"]["examples"].values())))
-    assert spec_example["value"] == payload, "the spec's request example is the curl payload from the page"
+    assert spec_request_example(spec, operation) == payload, "the spec's request example is the curl payload from the page"
+
+
+def test_python_and_javascript_examples_send_the_spec_request_example(doc, spec, operation):
+    """The page says the OpenAPI file is the single source for all three examples."""
+    example = spec_request_example(spec, operation)
+
+    # Python: the dict passed as json= to requests.post(...).
+    tree = ast.parse(fenced_blocks(doc, "python")[0])
+    posts = [node for node in ast.walk(tree) if isinstance(node, ast.Call) and getattr(node.func, "attr", None) == "post"]
+    assert len(posts) == 1, "the Python example makes exactly one requests.post call"
+    json_kwargs = [keyword for keyword in posts[0].keywords if keyword.arg == "json"]
+    assert len(json_kwargs) == 1, "the Python example sends its body with json="
+    assert ast.literal_eval(json_kwargs[0].value) == example
+
+    # JavaScript: the object literal inside JSON.stringify({...}).
+    js = fenced_blocks(doc, "javascript")[0]
+    body = js[js.index("JSON.stringify(") + len("JSON.stringify(") : js.index("}),") + 1]
+    body = re.sub(r"^(\s*)([A-Za-z_]\w*):", r'\1"\2":', body, flags=re.M)  # quote bare keys
+    body = re.sub(r",(\s*[}\]])", r"\1", body)  # drop trailing commas
+    assert json.loads(body) == example
+
+    # Both examples read the same response fields, and the spec defines each of them.
+    response_schema = operation["responses"]["200"]["content"]["application/json"]["schema"]
+    for path in ("matches", "matches[].label", "matches[].confidence", "matches[].reason"):
+        assert schema_at(spec, response_schema, path)["type"], path
+    error_schema = spec["components"]["schemas"]["ErrorResponse"]
+    for path in ("error.type", "error.message"):
+        assert schema_at(spec, error_schema, path)["type"] == "string", path
+    python = fenced_blocks(doc, "python")[0]
+    for text in ('result["matches"]', 'match["label"]', 'match["confidence"]', 'match.get("reason"', "error['type']", "error['message']"):
+        assert text in python, text
+    for text in ("result.matches", "match.label", "match.confidence", "match.reason", "error.type", "error.message"):
+        assert text in js, text
+
+
+def test_example_response_bills_the_example_request_text(doc, spec, operation):
+    """usage.input_characters in the example response is the length of the request's text."""
+    page_response = json.loads(fenced_blocks(doc, "json")[0])
+    assert page_response["usage"]["input_characters"] == len(curl_payload(doc)["text"])

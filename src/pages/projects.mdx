@@ -17,7 +17,7 @@ ask-my-docs numbers below were re-checked by running the code before this page w
 <aside className="page-aside" aria-labelledby="projects-at-a-glance">
   <h2 id="projects-at-a-glance" className="page-aside__title">At a glance</h2>
   <dl className="page-facts">
-    <div><dt>ask-my-docs</dt><dd>56 tests · CI · Recall@4 10/10</dd></div>
+    <div><dt>ask-my-docs</dt><dd>56 tests · CI · Recall@4&nbsp;10/10</dd></div>
     <div><dt>Gainwell Technologies</dt><dd>Technical Writer Intern, May–Aug 2025: wrote the 837I v1.3 update, edited and enhanced the 276/277 v1.1 guide</dd></div>
     <div><dt>Jungle Decision Framework</dt><dd>Personal documentation site at [docs.jordanyan.com](https://docs.jordanyan.com)</dd></div>
     <div><dt>Source</dt><dd>[ask-my-docs](https://github.com/kopyk/ask-my-docs) and [companion guides](https://github.com/kopyk/gainwell-dhcf-companion-guides) on GitHub</dd></div>
@@ -44,6 +44,8 @@ python ask.py path/to/docs "Your question here"
 
 Each claim on the label above is backed by something in the repository that you can run.
 
+<div className="label-table">
+
 | Claim | Evidence |
 |-------|----------|
 | 56 tests pass | `pytest` runs `tests/test_ask.py`, `tests/test_evaluate.py` and `tests/test_mcp_server.py` without an API key or network: the Claude call is replaced by a stand-in. Last run: 56 passed. |
@@ -51,6 +53,8 @@ Each claim on the label above is backed by something in the repository that you 
 | Recall@4 10/10 | `evaluate.py` checks 10 questions against a frozen copy of the docs they were written for (14 files, 124 sections), so the number reproduces on any machine. Last run: 10/10. |
 | MCP server | `mcp_server.py` exposes retrieval as a `search_docs(question, top_k)` tool for Claude Code and Claude Desktop. It is tested through the SDK's client both in memory and over stdio as a subprocess. |
 | Changelog | `CHANGELOG.md` follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/); its versions and dates come from the commit history, not from memory. |
+
+</div>
 
 ### How it works
 
@@ -93,8 +97,7 @@ DC Medicaid trading partners; the two I worked on are linked at the end.
 
 The Washington, D.C. EDI team's companion guides had to be written and revised under aggressive
 deadlines, consolidating contributions from 20+ subject-matter experts while maintaining HIPAA and
-ASC X12 compliance. Vendor onboarding questions were the measure of whether the guides were doing
-their job.
+ASC X12 compliance.
 
 ### What I did
 
@@ -131,6 +134,6 @@ mistakes, and a glossary.
 
 **Site:** [docs.jordanyan.com](https://docs.jordanyan.com) (built with Docusaurus)
 
-It also serves as the test corpus for ask-my-docs: the 10 evaluation questions were written against a
-frozen snapshot of that site's docs folder, so the Recall@4 result above is measured on documentation
-I wrote.
+Its docs folder, which at the time also held the writing samples, is the frozen test corpus for
+ask-my-docs: 4 of the 10 evaluation questions are about the Jungle guide and 6 are about the samples,
+all documentation I wrote.

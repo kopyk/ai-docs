@@ -142,3 +142,14 @@ def test_prose_matches_the_code(tutorial):
     assert "python ask.py" in doc
     assert "k=4" in doc, "the default number of sections is shown in the code"
     assert "raise `k`" in doc, "troubleshooting tells the reader which parameter to raise"
+
+
+def test_troubleshooting_quotes_the_errors_the_sdk_and_python_raise(tutorial):
+    """The quoted error text is what anthropic 0.x and CPython print, not a paraphrase."""
+    doc = read_doc(DOC_PATH)
+    # anthropic.Anthropic() with no key: TypeError("Could not resolve authentication method. ...")
+    assert "`TypeError: Could not resolve authentication method`" in doc
+    # A wrong key: anthropic.AuthenticationError (HTTP 401)
+    assert "`anthropic.AuthenticationError` (401)" in doc
+    # Python's own wording for a missing package
+    assert "`ModuleNotFoundError: No module named 'anthropic'`" in doc

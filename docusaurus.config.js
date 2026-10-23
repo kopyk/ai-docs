@@ -4,6 +4,26 @@
 import {themes as prismThemes} from 'prism-react-renderer';
 import rehypeScrollRegions from './src/plugins/rehype-scroll-regions.mjs';
 
+// Light code theme: prism's "github" theme with the five colors that fail
+// WCAG 4.5:1 on the #f6f8fa code background swapped for darker ones.
+// Comments, numbers/booleans, strings, keywords/tags, and attribute names.
+const lightCodeColorSwap = {
+  '#999988': '#57606a',
+  '#36acaa': '#116d6b',
+  '#00a4db': '#0b6e99',
+  '#d73a49': '#cf222e',
+  '#e3116c': '#b3135a',
+};
+const lightCodeTheme = {
+  ...prismThemes.github,
+  styles: prismThemes.github.styles.map((entry) => {
+    const color = entry.style.color?.toLowerCase();
+    return color && lightCodeColorSwap[color]
+      ? {...entry, style: {...entry.style, color: lightCodeColorSwap[color]}}
+      : entry;
+  }),
+};
+
 /** @type {import('@docusaurus/types').Config} */
 const config = {
   title: 'Jordan Yan · AI Documentation',
@@ -35,6 +55,14 @@ const config = {
     defaultLocale: 'en',
     locales: ['en'],
   },
+
+  // Small browser-only behaviours that need no component change. Each one
+  // exports onRouteDidUpdate and cleans up after itself.
+  clientModules: [
+    './src/clientModules/mobileDrawerFocus.js',
+    './src/clientModules/scrollRegions.js',
+    './src/clientModules/searchMain.js',
+  ],
 
   stylesheets: [
     {
@@ -108,6 +136,11 @@ const config = {
         docsRouteBasePath: 'docs',
         highlightSearchTermsOnTargetPage: false,
         searchBarShortcutHint: true,
+        // Removed only from the plugin's parsed copy of each page, not from the
+        // site: the "About this sample" title would otherwise be indexed as a
+        // second heading section, and the active navbar link doubles the
+        // breadcrumb label in results.
+        ignoreCssSelectors: ['.about-sample__title', '.navbar__link--active'],
       }),
     ],
   ],
@@ -204,10 +237,12 @@ const config = {
           {label: 'LinkedIn', href: 'https://www.linkedin.com/in/jordanxyan/'},
           {label: 'Portfolio', href: 'https://www.jordanyan.com'},
         ],
-        copyright: `© ${new Date().getFullYear()} Jordan Yan · San Luis Obispo, CA`,
+        // Rendered as HTML. The location stays together on one line; the
+        // string can still break after the "·" on narrow screens.
+        copyright: `© ${new Date().getFullYear()} Jordan Yan · <span style="white-space:nowrap">San Luis Obispo, CA</span>`,
       },
       prism: {
-        theme: prismThemes.github,
+        theme: lightCodeTheme,
         darkTheme: prismThemes.vsDark,
         additionalLanguages: ['http'],
       },

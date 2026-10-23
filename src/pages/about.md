@@ -59,6 +59,8 @@ This site is a [Docusaurus](https://docusaurus.io/) 3.9 project; the source is o
 - **Every proof label has a check behind it.** [GitHub Actions](https://github.com/kopyk/ai-docs/blob/main/.github/workflows/ci.yml)
   runs the checks below on every push and pull request, on Python 3.12 and Node 20.
 
+<div className="label-table">
+
 | Check | What it proves |
 |-------|----------------|
 | Site build | `npm run build` succeeds, so there are no broken links or anchors. |
@@ -67,7 +69,9 @@ This site is a [Docusaurus](https://docusaurus.io/) 3.9 project; the source is o
 | Rubric math | The [evaluation rubric](/docs/ai/eval-rubric)'s results table adds up: pass counts, per-type rates, the overall rate, and the scored example (`tests/test_eval_rubric.py`). |
 | Model card | The [model card](/docs/ai/model-card)'s frame counts sum to the stated test set, and its DoD principle and NIST AI RMF function names match the cited sources (`tests/test_model_card.py`). |
 | Work package | The [maintenance procedure](/docs/defense/maintenance-procedure)'s steps number continuously, every WARNING and CAUTION precedes a step, and the torque target is within the listed wrench range (`tests/test_maintenance_procedure.py`). |
-| OpenAPI file | The [API reference](/docs/ai/api-reference)'s OpenAPI file matches the page field for field (`tests/test_openapi_spec.py`) and is valid OpenAPI 3.1 (Redocly CLI). |
+| OpenAPI file | The [API reference](/docs/ai/api-reference)'s OpenAPI file matches the page field for field and its three request examples send the spec's request example (`tests/test_openapi_spec.py`); the file is valid OpenAPI 3.1 (Redocly CLI). |
+
+</div>
 
 ## Contact
 

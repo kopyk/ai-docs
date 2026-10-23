@@ -143,6 +143,13 @@ html {
   scroll-padding-top: calc(var(--ifm-navbar-height) + 1rem);
 }
 
+/* The html scroll-padding-top values (here, and for the sticky "On this page"
+   bar at 1199px and below) already include the navbar, so drop Docusaurus's
+   own per-heading offset. Otherwise the two add up and anchors land 80px low. */
+[class*='anchorTargetStickyNavbar'] {
+  scroll-margin-top: 0;
+}
+
 body {
   background: var(--jy-bg);
   -webkit-font-smoothing: antialiased;
@@ -291,8 +298,14 @@ h4 {
   }
 }
 
-/* ≥1200: fixed 224px TOC rail; the article takes the rest, up to 760px. */
+/* ≥1200: fixed 224px TOC rail; the article takes the rest, up to 760px. The
+   article and rail are centred together in the main column, so wide screens
+   don't leave all the spare width on the right. */
 @media (min-width: 1200px) {
+  main[class*='docMainContainer'] > .container > .row {
+    justify-content: center;
+  }
+
   main[class*='docMainContainer'] .row > .col[class*='docItemCol'] {
     flex: 1 1 0;
     min-width: 0;
@@ -302,6 +315,16 @@ h4 {
   main[class*='docMainContainer'] .row > [class*='docItemCol'] + .col {
     flex: 0 0 calc(224px + 2 * var(--ifm-spacing-horizontal));
     max-width: calc(224px + 2 * var(--ifm-spacing-horizontal));
+  }
+}
+
+/* ≥1440: Infima widens every .container to --ifm-container-width-xl (1400px,
+   set above for the docs shell). Keep that for the docs shell only; the
+   landing page, footer and other pages stay at the 1140px container, so their
+   side margins grow steadily instead of dropping from 166px to 36px. */
+@media (min-width: 1440px) {
+  .container:not(main[class*='docMainContainer'] > .container) {
+    max-width: var(--ifm-container-width);
   }
 }
 
@@ -455,14 +478,18 @@ h4 {
   }
 }
 
-/* Links and focus */
+/* Links and focus. Prose links are underlined, not distinguished by colour
+   alone (WCAG 1.4.1); hover thickens the line. Cards, buttons, pagination,
+   the TOC, breadcrumbs and the navbar keep their own treatment. */
 
-:is(.markdown, .mdx-page article) a {
+:is(.markdown, .mdx-page article) :is(p, li, dd, td, blockquote) a:not(.hash-link) {
+  text-decoration: underline;
+  text-decoration-thickness: 1px;
   text-underline-offset: 0.15em;
 }
 
-:is(.markdown, .mdx-page article) a:hover {
-  text-decoration-thickness: 1px;
+:is(.markdown, .mdx-page article) :is(p, li, dd, td, blockquote) a:not(.hash-link):hover {
+  text-decoration-thickness: 2px;
 }
 
 a:focus-visible,
@@ -485,15 +512,23 @@ summary:focus-visible,
   border-radius: 0;
 }
 
+/* The tab list scrolls (Infima overflow-x: auto), which clips an outside
+   outline, so draw it inside. */
+.tabs [role='tab']:focus-visible {
+  outline-offset: -2px;
+  border-radius: 6px 6px 0 0;
+}
+
 /* Heading links: revealed on hover where hover exists, always shown on touch.
-   They stay in the tab order and appear when focused. */
+   They stay in the tab order and appear when focused. Inline (not
+   inline-block) with no space before it, so the "#" stays on the heading's
+   last line instead of wrapping alone; the side padding keeps the target at
+   least 24px wide. */
 
 .hash-link {
-  display: inline-block;
-  min-width: 24px;
-  padding-left: 0.25rem;
+  display: inline;
+  padding: 0 0.3em;
   color: var(--jy-muted);
-  text-align: center;
 }
 
 .hash-link:hover {
@@ -728,8 +763,9 @@ summary:focus-visible,
 }
 
 @media (max-width: 639px) {
-  /* Collapsed to a 44px icon button until focused, then it covers the bar. */
-  .navbar__search-input:not(:focus) {
+  /* Collapsed to a 44px icon button until focused, then it covers the bar.
+     `.navbar` is in the selector so this beats the plugin's 576px width:2rem. */
+  .navbar .navbar__search-input:not(:focus) {
     width: 44px;
     height: 44px;
     padding: 0;
@@ -819,9 +855,14 @@ summary:focus-visible,
   background: var(--jy-surface);
 }
 
-.navbar-sidebar__brand [class*='colorModeToggle'] button {
+/* Colour-mode toggle in the drawer header: the button is 100% of its wrapper,
+   so size the wrapper and the icon stays centred. */
+.navbar-sidebar__brand div:has(> [class*='toggleButton']) {
   width: 44px;
   height: 44px;
+}
+
+.navbar-sidebar__brand [class*='toggleButton'] {
   border-radius: 8px;
 }
 
@@ -907,6 +948,23 @@ summary:focus-visible,
 
 .theme-doc-sidebar-container [class*='collapseSidebarButton']:hover {
   background: var(--jy-surface);
+}
+
+/* The sticky sidebar viewport is 100vh tall by default, so at the bottom of a
+   long page it slides under the navbar and hides the section label. Let the
+   expanded sidebar be as tall as its menu instead; the collapsed expand strip
+   keeps its full height. */
+@media (min-width: 997px) {
+  .theme-doc-sidebar-container:not([class*='docSidebarContainerHidden']) [class*='sidebarViewport'],
+  .theme-doc-sidebar-container:not([class*='docSidebarContainerHidden']) [class*='sidebar_'] {
+    height: auto;
+  }
+
+  /* The expand strip is clipped by its container, so draw the ring inside. */
+  .theme-doc-sidebar-container [class*='expandButton']:focus-visible {
+    outline-offset: -2px;
+    border-radius: 0;
+  }
 }
 
 .table-of-contents {
@@ -1315,7 +1373,10 @@ pre code,
 
 /* Tables: natural width; wide ones scroll inside a labelled, focusable region
    (added at build time by src/plugins/rehype-scroll-regions.mjs) with an edge
-   shadow while there is more to see, and a sticky first column. */
+   shadow while there is more to see, and a sticky first column. A client
+   module (src/clientModules/scrollRegions.js) removes tabindex from tables
+   that don't overflow at the current width, so only tables that scroll are
+   Tab stops. */
 
 .table-scroll {
   width: max-content;
@@ -1409,6 +1470,32 @@ pre code,
   .table-scroll table td:first-child:has(> code) {
     max-width: none;
   }
+
+  /* The main text column of a table that scrolls at every phone width (marked
+     with <div className="text-col-N">; the plugin adds .long-col). min() caps
+     it at the strip beside the sticky first column (about 168px at 320,
+     224px at 390), so no line hides under that column. */
+  :is(.markdown, .mdx-page article) .table-scroll table :is(th, td).long-col {
+    min-width: min(14rem, calc(100vw - 9.5rem));
+  }
+}
+
+/* Phones: a code-bearing first column is wide, so pinning it leaves almost no
+   room to read the other columns. Let those tables scroll as a whole. */
+@media (max-width: 639px) {
+  .table-scroll table:has(td:first-child > code) :is(th, td):first-child {
+    position: static;
+    box-shadow: none;
+  }
+}
+
+/* Evidence tables on About and Projects: short labels in the first column
+   stay on one line on desktop. Not .wide-table, whose nowrap applies at every
+   width and would widen the sticky column on phones. */
+@media (min-width: 997px) {
+  :is(.markdown, .mdx-page article) .label-table table :is(th, td):first-child {
+    white-space: nowrap;
+  }
 }
 
 :is(.markdown, .mdx-page article) .wide-table table :is(th, td:not(:last-child)) {
@@ -1492,9 +1579,14 @@ pre code,
 
 /* "About this sample": the card under each sample's title (audience, document
    type, approach, how it was checked; see src/components/AboutSample).
-   Desktop and tablet: a label column beside the text. Phones: labels above. */
+   Phones and tablets: title, four stacked rows (labels above the text on
+   phones, beside it from 640px), proof chips last. Desktop (≥997): a compact
+   box so the sample starts above the fold: title and chips on one row,
+   Audience and Document type side by side, and the approach and checks
+   behind a closed disclosure. */
 
 .about-sample {
+  display: grid;
   margin: 0 0 1.75rem;
   padding: 1rem 1.125rem 1.125rem;
   border: 1px solid var(--jy-border);
@@ -1502,6 +1594,12 @@ pre code,
   background: var(--jy-surface);
   font-size: 0.9375rem;
   line-height: 1.5;
+}
+
+/* Below 997px the header's children are rows of the box: the title first and
+   the chips last. */
+.about-sample__header {
+  display: contents;
 }
 
 .markdown .about-sample__title {
@@ -1514,6 +1612,11 @@ pre code,
   letter-spacing: 0.06em;
   text-transform: uppercase;
   color: var(--jy-text-2);
+}
+
+.about-sample__header > .proof-labels {
+  order: 1;
+  margin: 0.5rem 0 0;
 }
 
 .about-sample__facts {
@@ -1546,6 +1649,78 @@ pre code,
   margin-top: 0.5rem;
 }
 
+.about-sample__more {
+  margin-top: 0.875rem;
+}
+
+.about-sample__more > summary {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  min-height: 32px;
+  margin: 0 -0.375rem;
+  padding: 0 0.375rem;
+  border-radius: 6px;
+  list-style: none;
+  cursor: pointer;
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--jy-accent-text);
+}
+
+.about-sample__more > summary::-webkit-details-marker {
+  display: none;
+}
+
+.about-sample__more > summary::before {
+  content: '';
+  flex-shrink: 0;
+  width: 0.5rem;
+  height: 0.5rem;
+  margin: 0 0.125rem 0 0.25rem;
+  border-right: 2px solid currentColor;
+  border-bottom: 2px solid currentColor;
+  transform: rotate(-45deg);
+  transition: transform 0.15s ease;
+}
+
+.about-sample__more[open] > summary::before {
+  transform: rotate(45deg);
+}
+
+.about-sample__more > summary:hover {
+  background: color-mix(in srgb, var(--jy-accent) 8%, transparent);
+}
+
+.about-sample__more > dl {
+  margin-top: 0.875rem;
+}
+
+/* Phones and tablets show the approach and checks as plain rows, as they were
+   before the disclosure existed, where the browser lets CSS reveal a closed
+   <details>. Elsewhere the rows sit behind the summary. */
+@supports selector(::details-content) {
+  @media (max-width: 996px) {
+    .about-sample__more > summary {
+      display: none;
+    }
+
+    .about-sample__more::details-content {
+      content-visibility: visible;
+    }
+
+    .about-sample__more > dl {
+      margin-top: 0;
+    }
+  }
+}
+
+@media print {
+  .about-sample__more::details-content {
+    content-visibility: visible;
+  }
+}
+
 @media (min-width: 640px) {
   .about-sample__facts > div {
     grid-template-columns: 9.5rem minmax(0, 1fr);
@@ -1561,6 +1736,57 @@ pre code,
   .about-sample {
     padding: 0.875rem 1rem 1rem;
     border-radius: 10px;
+  }
+}
+
+@media (min-width: 997px) {
+  .about-sample {
+    display: block;
+    padding: 0.875rem 1.125rem 1rem;
+  }
+
+  .about-sample__header {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.375rem 1rem;
+    margin-bottom: 0.75rem;
+  }
+
+  .markdown .about-sample__header > .about-sample__title {
+    margin: 0;
+  }
+
+  .about-sample__header > .proof-labels {
+    order: 0;
+    margin: 0;
+  }
+
+  /* Audience and Document type side by side, each label above its text.
+     align-items: start keeps a short value at the top when its neighbour
+     wraps further. */
+  .about-sample__facts--top {
+    grid-template-columns: 1fr 1fr;
+    align-items: start;
+    gap: 0.5rem 1.5rem;
+  }
+
+  .about-sample__facts--top > div {
+    grid-template-columns: none;
+    gap: 0.125rem;
+  }
+
+  .about-sample__facts--top dt {
+    padding-top: 0;
+  }
+
+  .about-sample__more {
+    margin-top: 0.5rem;
+  }
+
+  .about-sample__more > dl {
+    margin-top: 0.625rem;
   }
 }
 
@@ -1677,6 +1903,25 @@ pre code,
   min-width: 0;
   min-height: 48px;
   overflow-wrap: anywhere;
+}
+
+/* Phones: label above the value, so the email address and LinkedIn URL stay
+   on one line at 320–360px. The link is the only tap target, so it keeps 44px. */
+@media (max-width: 639.98px) {
+  .contact-rows li {
+    flex-direction: column;
+    align-items: flex-start;
+    padding: 0.5rem 1rem 0;
+  }
+
+  .contact-rows li strong {
+    flex: none;
+    font-size: 0.8125rem;
+  }
+
+  .contact-rows li a {
+    min-height: 44px;
+  }
 }
 
 /* Search results page */
@@ -1806,7 +2051,7 @@ html[data-theme='dark'] {
 }
 
 .footer__link-separator {
-  color: var(--jy-border);
+  color: var(--jy-muted);
 }
 
 .footer__copyright {
@@ -1831,6 +2076,7 @@ html[data-theme='dark'] {
 
   .footer__links .footer__links {
     justify-content: flex-end;
+    align-items: center;
   }
 
   .footer__bottom {

@@ -100,7 +100,7 @@ Each section keeps its file path so Claude can cite it later.
 
 ## Step 3: Find the relevant sections
 
-Score each section by how many words it shares with the question, ignoring common words like "the" and "how":
+Score each section by how many times the question's words appear in it, ignoring common words like "the" and "how":
 
 ```python
 STOPWORDS = {"a", "an", "and", "the", "how", "what", "is", "to", "of", "in", "i", "do"}
@@ -121,8 +121,9 @@ def find_relevant(sections, question, k=4):
 
 :::note
 This is **keyword search**. It's simple and needs no extra libraries, but it only matches exact
-words. Production systems usually use **embeddings**, which match by meaning, so "attack early"
-can find a section about "invading."
+words, and counting matches favors long sections. The [ask-my-docs repository](https://github.com/kopyk/ask-my-docs)
+later replaced this count with share and weighted scorers. Production systems usually use
+**embeddings**, which match by meaning, so "attack early" can find a section about "invading."
 :::
 
 ## Step 4: Ask Claude
@@ -182,9 +183,10 @@ You should see an answer followed by a `Sources:` line naming the files Claude u
 
 | Problem | Cause | Fix |
 |---------|-------|-----|
-| `AuthenticationError` | API key is missing or wrong | Run `echo $ANTHROPIC_API_KEY` and set it again |
+| `TypeError: Could not resolve authentication method` | `ANTHROPIC_API_KEY` isn't set in this terminal | Run `export ANTHROPIC_API_KEY="your-key-here"` (step 3), then run `ask.py` again |
+| `anthropic.AuthenticationError` (401) | The API key is wrong or has been revoked | Run `echo $ANTHROPIC_API_KEY` to check it, or create a new key in the Claude Console |
 | Answer says the docs don't cover it, but they do | Keyword search missed the section | Rephrase using words from the docs, or raise `k` |
-| `ModuleNotFoundError: anthropic` | Virtual environment isn't active | Run `source .venv/bin/activate` |
+| `ModuleNotFoundError: No module named 'anthropic'` | Virtual environment isn't active | Run `source .venv/bin/activate`, or run `pip install anthropic` |
 
 ## Next steps
 

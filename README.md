@@ -7,7 +7,9 @@ samples. The site is built with [Docusaurus](https://docusaurus.io/) 3.9 and has
 - **Defense & aerospace:** maintenance procedure (work package) and interface control document
 
 It also has a **Projects** page (including [ask-my-docs](https://github.com/kopyk/ask-my-docs)) and an
-**About** page. All samples are original work. Systems, part numbers and data are fictional.
+**About** page. All samples are original work written for this portfolio. Systems, part numbers and data
+are fictional. No CUI, export-controlled (ITAR/EAR) or proprietary information is included. The exception
+is the ask-my-docs tool, which is real.
 
 Each sample opens with an **About this sample** box (audience, document type, approach, how it was
 checked). The proof label in that box is only used where a check exists and runs in CI; see
@@ -21,8 +23,9 @@ checked). The proof label in that box is only used where a check exists and runs
 | `src/pages/` | Landing page (`index.js`), Projects, and About |
 | `src/components/AboutSample/` | The "About this sample" box and the `ProofLabel` pill |
 | `src/css/custom.css` | Design tokens, theme overrides (light and dark), and the responsive layout rules |
-| `src/theme/` | Two small ejected theme components (see [Swizzled components](#swizzled-components)) |
-| `src/plugins/rehype-scroll-regions.mjs` | Build-time plugin that wraps tables and code blocks in labelled scroll regions |
+| `src/theme/` | A few small ejected or wrapped theme components (see [Swizzled components](#swizzled-components)) |
+| `src/clientModules/` | Browser-only behaviour registered in `docusaurus.config.js`: focus management for the mobile drawer, Tab stops only on tables that overflow, and a `main` landmark on the search page |
+| `src/plugins/rehype-scroll-regions.mjs` | Build-time plugin that wraps tables and code blocks in labelled scroll regions and names them by heading; a client module removes `tabindex` from tables that don't overflow |
 | `sidebars.js` | The two docs sidebars |
 | `static/` | Favicons, social card, `robots.txt`, `llms.txt`, web manifest, `CNAME`, and `.nojekyll` |
 | `static/openapi/atlas-classify.yaml` | OpenAPI 3.1 file for the API reference sample; linted and compared with the page in CI |
@@ -79,12 +82,14 @@ check the 997–1199px range (the TOC override) and the mobile search box.
 
 ## Swizzled components
 
-Only two small components are ejected. Re-check them when upgrading Docusaurus.
+Only a few small components are ejected or wrapped. Re-check them when upgrading Docusaurus.
 
 | Component | Why |
 |-----------|-----|
-| `TOCCollapsible` | Adds `aria-expanded`/`aria-controls` to the "On this page" toggle, closes the list on Esc (returning focus to the toggle), on a link, or on an outside click, and highlights the current section. The stock component has none of these. |
-| `NotFound` (and `NotFound/Content`) | A 404 page in the site's design, with a search box and links to each section, and `noindex`. |
+| `TOCCollapsible` (ejected) | Adds `aria-expanded`/`aria-controls` to the "On this page" toggle, closes the list on Esc (returning focus to the toggle), on a link, when focus leaves it, or on an outside click, moves focus to the chosen heading, and highlights the current section. The stock component has none of these. |
+| `NotFound` (and `NotFound/Content`, ejected) | A 404 page in the site's design, with a search box and links to each section, and `noindex`. |
+| `DocRoot/Layout/Sidebar/ExpandButton` (ejected) | The stock "Expand sidebar" control is a `div` that toggles on any key, including Tab. This one is a real `button`, takes focus after the sidebar is collapsed, and hands focus to "Collapse sidebar" after expanding. |
+| `BackToTopButton` (wrapped) | Under `prefers-reduced-motion: reduce` the stock button still animates the scroll; the wrapper jumps instantly instead, and moves focus to the page title so it doesn't drop to `body` when the button hides. |
 
 ## Local development
 

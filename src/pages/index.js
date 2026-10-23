@@ -3,7 +3,8 @@ import Link from '@docusaurus/Link';
 import Layout from '@theme/Layout';
 import styles from './index.module.css';
 
-// `summary` is the one-line version shown in the phone layout (≤639px).
+// `summary` is the short version shown in the phone layout (≤639px): one line
+// from 360px up, up to two lines below that (see index.module.css).
 const aiDocs = [
   {
     to: '/docs/ai/model-card',
@@ -53,7 +54,7 @@ const defenseDocs = [
     type: 'Maintenance procedure',
     title: 'UAS propeller replacement',
     description:
-      'A MIL-STD-40051-2 work package with MIL-STD-38784 WARNING, CAUTION, and NOTE advisories, prerequisites, and verifiable steps.',
+      'A MIL-STD-40051-2 work package with MIL-STD-38784B WARNING, CAUTION, and NOTE advisories, prerequisites, and verifiable steps.',
     summary: 'MIL-STD-40051-2 work package',
   },
   {

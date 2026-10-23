@@ -360,6 +360,14 @@
   }
 }
 
+/* Below 360px a one-line summary is cut off, so allow a second line. */
+@media (max-width: 359px) {
+  .cardSummary {
+    -webkit-line-clamp: 2;
+    line-clamp: 2;
+  }
+}
+
 @media (min-width: 640px) {
   .cardRow {
     display: grid;

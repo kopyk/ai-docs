@@ -1,6 +1,6 @@
 # Jordan Yan · AI Documentation
 
-> Technical writing samples by Jordan Yan: an AI model card, a RAG tutorial, an API reference and an LLM evaluation rubric, plus a defense maintenance work package and an interface control document. All samples are original work; the systems, part numbers and data in them are fictional. The projects page describes real work: ask-my-docs (a tested, evaluated RAG tool), the Gainwell Technologies EDI companion guides, and the Jungle Decision Framework documentation site.
+> Technical writing samples by Jordan Yan: an AI model card, a RAG tutorial, an API reference and an LLM evaluation rubric, plus a defense maintenance work package and an interface control document. All samples are original work; the systems, part numbers and data in them are fictional. No CUI, export-controlled (ITAR/EAR) or proprietary information is included. The projects page describes real work: ask-my-docs (a tested, evaluated RAG tool), the Gainwell Technologies EDI companion guides, and the Jungle Decision Framework documentation site.
 
 Every sample opens with an "About this sample" box (audience, document type and standard, approach, how it was checked). The checks run in GitHub Actions on every push: the tutorial's code is executed, the ICD byte layout and the rubric's math are recomputed, and the OpenAPI file is linted and compared with the API reference page. Source: https://github.com/kopyk/ai-docs
 

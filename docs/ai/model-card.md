@@ -98,14 +98,14 @@ Risk Management Framework (AI RMF 1.0, January 2023)**.
 | DoD principle | How SKYSWEEP addresses it |
 |---------------|---------------------------|
 | **Responsible** | Humans confirm every detection; the model cannot close or clear a runway |
-| **Equitable** | Test set balanced across airfields, lighting, and weather to expose uneven performance |
+| **Equitable** | Test set spans three unseen airfields and four lighting/weather conditions, with results reported per condition (Section 2) to expose uneven performance |
 | **Traceable** | Training data lineage, labeling procedures, and model versions are recorded |
 | **Reliable** | Performance reported per operating condition, not as a single average |
 | **Governable** | Operators can disable the model; image-quality checks halt inference automatically |
 
 | NIST AI RMF function | Artifact |
 |----------------------|----------|
-| **Govern** | Model owner and review cadence listed in this card |
+| **Govern** | Model owner and last-review date listed in this card; re-validation required before deployment at any new airfield (Section 4) |
 | **Map** | Intended and out-of-scope uses (Section 1) |
 | **Measure** | Condition-level metrics (Section 2) |
 | **Manage** | Failure modes and mitigations (Section 4) |

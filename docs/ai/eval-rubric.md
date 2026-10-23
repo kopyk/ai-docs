@@ -31,12 +31,16 @@ failures before users do.
 
 Score each answer on four criteria. Each criterion has a clear pass/fail rule so different graders reach the same score.
 
+<div className="text-col-3">
+
 | # | Criterion | Pass (1) | Fail (0) |
 |---|-----------|----------|----------|
 | 1 | **Correct** | Every factual claim matches the reference answer | Any claim contradicts the reference or the docs |
 | 2 | **Grounded** | Every claim can be traced to a cited section | Any claim comes from outside the provided docs |
 | 3 | **Complete** | Covers every point in the reference answer's "must include" list | Misses one or more required points |
 | 4 | **Honest about gaps** | For out-of-scope questions, says the docs don't cover it | Invents an answer to an out-of-scope question |
+
+</div>
 
 **Answer score** = sum of the criteria that apply (0–4). Criteria marked n/a are left out of the total. **An answer passes only if it scores 1 on Correct and Grounded**, whatever its total.
 A complete but wrong answer is worse than an incomplete one.
@@ -45,12 +49,16 @@ A complete but wrong answer is worse than an incomplete one.
 
 A rubric is only as good as the questions it grades. Include all four question types:
 
+<div className="text-col-3">
+
 | Type | Share | Example | What it tests |
 |------|-------|---------|---------------|
 | **Direct lookup** | 40% | "What torque does the propeller nut take?" | Basic retrieval |
 | **Multi-section** | 25% | "What do I do before *and* after replacing the propeller?" | Combining sources |
 | **Reworded** | 20% | "How tight should the prop be?" | Retrieval when wording differs from the docs |
 | **Out of scope** | 15% | "What's the aircraft's maximum altitude?" (not in the docs) | Refusing to guess |
+
+</div>
 
 For each question, record:
 

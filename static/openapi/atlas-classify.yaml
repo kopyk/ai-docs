@@ -101,7 +101,7 @@ paths:
                       propulsion: 0.02
                     model: atlas-classify-2
                     usage:
-                      input_characters: 82
+                      input_characters: 81
         '400':
           description: A field is missing or out of range. Check `error.message` for the field name.
           headers:
