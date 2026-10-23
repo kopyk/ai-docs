@@ -1,0 +1,63 @@
+---
+title: Projects
+description: Projects by Jordan Yan, including ask-my-docs, a retrieval-augmented Q&A tool for Markdown documentation built with the Claude API.
+hide_table_of_contents: true
+---
+
+<p className="eyebrow">Projects</p>
+
+# Projects
+
+Working tools and public documentation. Unlike the writing samples, these are real.
+
+## ask-my-docs
+
+Ask questions about a folder of Markdown documentation and get answers from Claude, with sources.
+It's a small example of **retrieval-augmented generation (RAG)**: instead of asking a model to answer
+from memory, it first finds the relevant parts of your documents and gives the model only those.
+
+**Repository:** [github.com/kopyk/ask-my-docs](https://github.com/kopyk/ask-my-docs)  
+**Built with:** Python 3.10+, the Anthropic Python SDK  
+**Tutorial:** [Build a Q&A bot over your docs](/docs/ai/rag-tutorial) walks through a simplified version.
+
+```bash
+python ask.py path/to/docs "Your question here"
+```
+
+### How it works
+
+1. **Load.** `load_sections()` reads every `.md` file and splits it into sections at each heading.
+2. **Retrieve.** `find_relevant()` scores each section by which of the question's words it contains,
+   ignoring common words. Rare words count more: each word gets the weight log(N / df), where N is the
+   number of sections and df is how many sections contain the word. The tool keeps the top 4 sections.
+3. **Generate.** `ask_claude()` sends those sections and the question to Claude. The system prompt tells
+   Claude to answer only from the sections, say so when they don't cover the question, and list its sources.
+
+### Retrieval evaluation
+
+`evaluate.py` checks whether retrieval finds the right file for 10 test questions, each paired with the
+file that holds its answer. It reports **recall@k**: the share of questions whose answer file was among
+the top k sections retrieved. `--compare` runs three scorers side by side.
+
+| Scorer | How it scores a section | Recall@2 | Recall@4 | Recall@8 |
+|--------|-------------------------|----------|----------|----------|
+| count | How many times question words appear (favors long sections) | 9/10 | 10/10 | 10/10 |
+| share | Share of question words the section contains | 9/10 | 9/10 | 9/10 |
+| weighted | Like share, but rare words count more (default) | 9/10 | 10/10 | 10/10 |
+
+Ten questions is a small sample, so treat the score as a rough check. The evaluation doesn't call Claude,
+so it runs without an API key.
+
+### Limitations
+
+- **Keyword matching only.** A question about "attacking early" won't find a section that only says
+  "invade." Embeddings, which match by meaning, are the next step.
+- **Markdown only.** PDFs and other formats aren't read.
+
+## DC DHCF EDI companion guides
+
+HIPAA EDI companion guides published by Gainwell Technologies for DC Medicaid trading partners. During
+a summer 2025 internship, I authored the 837I Institutional Claims v1.3 update and edited the 276/277
+Claim Status v1.1 guide, adding segment tables and error code mappings.
+
+**Repository:** [github.com/kopyk/gainwell-dhcf-companion-guides](https://github.com/kopyk/gainwell-dhcf-companion-guides)
