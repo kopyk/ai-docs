@@ -9,18 +9,54 @@ samples. The site is built with [Docusaurus](https://docusaurus.io/) 3.9 and has
 It also has a **Projects** page (including [ask-my-docs](https://github.com/kopyk/ask-my-docs)) and an
 **About** page. All samples are original work. Systems, part numbers and data are fictional.
 
+Each sample opens with an **About this sample** box (audience, document type, approach, how it was
+checked). The proof label in that box is only used where a check exists and runs in CI; see
+[Sample checks](#sample-checks).
+
 ## Project layout
 
 | Path | Contents |
 |------|----------|
 | `docs/ai/`, `docs/defense/` | The writing samples (Markdown) |
 | `src/pages/` | Landing page (`index.js`), Projects, and About |
+| `src/components/AboutSample/` | The "About this sample" box and the `ProofLabel` pill |
 | `src/css/custom.css` | Design tokens, theme overrides (light and dark), and the responsive layout rules |
 | `src/theme/` | Two small ejected theme components (see [Swizzled components](#swizzled-components)) |
 | `src/plugins/rehype-scroll-regions.mjs` | Build-time plugin that wraps tables and code blocks in labelled scroll regions |
 | `sidebars.js` | The two docs sidebars |
-| `static/` | Favicons, social card, `robots.txt`, web manifest, `CNAME`, and `.nojekyll` |
-| `.github/workflows/deploy.yml` | Build and deploy to GitHub Pages |
+| `static/` | Favicons, social card, `robots.txt`, `llms.txt`, web manifest, `CNAME`, and `.nojekyll` |
+| `static/openapi/atlas-classify.yaml` | OpenAPI 3.1 file for the API reference sample; linted and compared with the page in CI |
+| `tests/` | pytest checks that the samples' proof claims hold (see [Sample checks](#sample-checks)); `tests/fixtures/` holds the docs the RAG tutorial test runs against |
+| `requirements-dev.txt`, `pytest.ini`, `redocly.yaml` | Python packages for the checks, pytest paths, and the Redocly lint config |
+| `.github/workflows/ci.yml` | Build, sample checks, and OpenAPI lint on every push and pull request |
+| `.github/workflows/deploy.yml` | Build and deploy to GitHub Pages on `main` |
+
+## Sample checks
+
+Every proof label on the site is backed by something you can run. `.github/workflows/ci.yml` runs all of
+it on every push and pull request (Node 20, Python 3.12):
+
+| Check | What it proves | Label on the sample |
+|-------|----------------|---------------------|
+| `npm run build` | The site builds; broken links and anchors fail it | — |
+| `tests/test_rag_tutorial.py` | The Python blocks in `docs/ai/rag-tutorial.md` run as printed, against `tests/fixtures/docs`, with the Claude call replaced by a stand-in | Code tested in CI |
+| `tests/test_icd_layout.py` | The ICD's byte ranges are contiguous, match their types, total 32 bytes, fit after scaling, and the CRC covers every byte before it | Layout verified |
+| `tests/test_eval_rubric.py` | The rubric's results table adds up (pass counts, rates, overall, scored example) | Math verified |
+| `tests/test_model_card.py` | Frame counts sum to the stated test set; DoD principle and NIST AI RMF function names match the sources | Sources checked, Totals verified |
+| `tests/test_maintenance_procedure.py` | Steps number continuously, every WARNING/CAUTION precedes a step, torque target is within the wrench range | Standards cited |
+| `tests/test_openapi_spec.py` + Redocly CLI | `static/openapi/atlas-classify.yaml` matches `docs/ai/api-reference.md` field for field and is valid OpenAPI 3.1 | OpenAPI spec validated |
+
+Run them locally:
+
+```bash
+python3 -m venv .venv && source .venv/bin/activate
+pip install -r requirements-dev.txt
+pytest
+npx --yes @redocly/cli@2.70.0 lint static/openapi/atlas-classify.yaml   # same pinned version as CI
+```
+
+If a test fails after you edit a sample, the sample is what to fix (or the test, if the sample is right
+and the check is too strict). Don't weaken a label to make a test pass.
 
 ## Responsive layout
 
@@ -72,6 +108,7 @@ workflow checks out full history (`fetch-depth: 0`) so the dates are accurate.
 
 Every push to `main` builds the site and deploys it to GitHub Pages with GitHub Actions
 (`.github/workflows/deploy.yml`). You can also run the workflow manually from the **Actions** tab.
+The checks in `ci.yml` run alongside it; they don't gate the deploy, so watch both in the **Actions** tab.
 
 One-time setup:
 
