@@ -1443,6 +1443,14 @@ pre code,
   white-space: nowrap;
 }
 
+/* First-column code may break at its own spaces (an error message such as
+   "TypeError: Could not resolve authentication method"); a single token has
+   none and stays whole. Otherwise one long message makes the whole table
+   scroll at desktop width. */
+.table-scroll table td:first-child > code {
+  white-space: normal;
+}
+
 /* Sticky first column: keeps the row label in view while the rest scrolls. */
 .table-scroll table :is(th, td):first-child {
   position: sticky;
@@ -1465,8 +1473,9 @@ pre code,
     max-width: 10rem;
   }
 
-  /* Code can't wrap, so a first-column cell that holds it keeps its natural
-     width instead of overflowing the sticky cell onto the next column. */
+  /* Code only breaks at its spaces, so a first-column cell that holds it
+     keeps its natural width instead of overflowing the sticky cell onto the
+     next column. */
   .table-scroll table td:first-child:has(> code) {
     max-width: none;
   }

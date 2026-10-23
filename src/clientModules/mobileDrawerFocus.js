@@ -92,7 +92,29 @@ function onOpen(navbar) {
   setInertOutside(navbar, sidebar);
   document.addEventListener('keydown', onKeyDown);
   sidebar.addEventListener('click', onDrawerClick, true);
-  sidebar.querySelector('.navbar-sidebar__close')?.focus({preventScroll: true});
+  focusClose(sidebar);
+}
+
+// Infima transitions the drawer's visibility, so in the frame the class is
+// added it is still `visibility: hidden` and focus() is refused. Retry on the
+// following frames until the close button holds focus (the transition is
+// --ifm-transition-fast, 200ms; 30 frames is about 500ms).
+function focusClose(sidebar) {
+  const close = sidebar.querySelector('.navbar-sidebar__close');
+  if (!close) {
+    return;
+  }
+  let tries = 0;
+  function attempt() {
+    if (!open) {
+      return;
+    }
+    close.focus({preventScroll: true});
+    if (document.activeElement !== close && tries++ < 30) {
+      window.requestAnimationFrame(attempt);
+    }
+  }
+  attempt();
 }
 
 function onClose(navbar) {

@@ -8,15 +8,18 @@
  *
  * Changes from upstream:
  * - a native <button>, so only Enter and Space activate it (no onKeyDown)
- * - takes focus when it appears right after the sidebar was collapsed (focus
- *   is on <body> or still inside the sidebar container). On a navigation
- *   remount (ResetOnSidebarChange) focus is on the link that was followed,
- *   so it is left alone.
+ * - takes focus when it appears because the user collapsed the sidebar (the
+ *   wrapped "Collapse sidebar" button records that in focusIntent.js). On a
+ *   navigation remount (ResetOnSidebarChange, when the AI and Defense
+ *   sidebars swap) there is no such request, so focus is left alone.
+ *   document.activeElement can't tell the two apart: Docusaurus moves focus
+ *   to the skip-to-content container on every route push.
  * - after expanding, moves focus to the "Collapse sidebar" button
  */
 import React, {useEffect, useRef} from 'react';
 import {translate} from '@docusaurus/Translate';
 import IconArrow from '@theme/Icon/Arrow';
+import {consumeExpandFocus} from './focusIntent';
 import styles from './styles.module.css';
 
 const SIDEBAR_CONTAINER = '.theme-doc-sidebar-container';
@@ -26,14 +29,8 @@ export default function DocRootLayoutSidebarExpandButton({toggleSidebar}) {
   const buttonRef = useRef(null);
 
   useEffect(() => {
-    const button = buttonRef.current;
-    const active = document.activeElement;
-    const container = button?.closest(SIDEBAR_CONTAINER);
-    if (!button || !container) {
-      return;
-    }
-    if (!active || active === document.body || container.contains(active)) {
-      button.focus({preventScroll: true});
+    if (consumeExpandFocus()) {
+      buttonRef.current?.focus({preventScroll: true});
     }
   }, []);
 

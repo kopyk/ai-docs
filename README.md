@@ -88,7 +88,8 @@ Only a few small components are ejected or wrapped. Re-check them when upgrading
 |-----------|-----|
 | `TOCCollapsible` (ejected) | Adds `aria-expanded`/`aria-controls` to the "On this page" toggle, closes the list on Esc (returning focus to the toggle), on a link, when focus leaves it, or on an outside click, moves focus to the chosen heading, and highlights the current section. The stock component has none of these. |
 | `NotFound` (and `NotFound/Content`, ejected) | A 404 page in the site's design, with a search box and links to each section, and `noindex`. |
-| `DocRoot/Layout/Sidebar/ExpandButton` (ejected) | The stock "Expand sidebar" control is a `div` that toggles on any key, including Tab. This one is a real `button`, takes focus after the sidebar is collapsed, and hands focus to "Collapse sidebar" after expanding. |
+| `DocRoot/Layout/Sidebar/ExpandButton` (ejected) | The stock "Expand sidebar" control is a `div` that toggles on any key, including Tab. This one is a real `button`, takes focus after the user collapses the sidebar, and hands focus to "Collapse sidebar" after expanding. |
+| `DocSidebar/Desktop/CollapseButton` (wrapped) | Records that the user collapsed the sidebar (`ExpandButton/focusIntent.js`), so the expand button takes focus only then and not when navigation between the AI and Defense sidebars remounts it. |
 | `BackToTopButton` (wrapped) | Under `prefers-reduced-motion: reduce` the stock button still animates the scroll; the wrapper jumps instantly instead, and moves focus to the page title so it doesn't drop to `body` when the button hides. |
 
 ## Local development
