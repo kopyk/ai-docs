@@ -1,0 +1,4 @@
+# Packages for the sample checks in tests/. Install with: pip install -r requirements-dev.txt
+# CI runs them on Python 3.12 (.github/workflows/ci.yml).
+pytest>=8
+PyYAML>=6

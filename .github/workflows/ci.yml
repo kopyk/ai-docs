@@ -1,0 +1,65 @@
+# Checks that the samples' proof claims hold, on every push and pull request.
+# Deployment is separate (deploy.yml) and only runs on main.
+#
+#   build    the site builds; broken links or anchors fail it (docusaurus.config.js)
+#   checks   pytest runs the sample checks in tests/ on Python 3.12:
+#            the RAG tutorial's code, the ICD byte layout, the eval rubric's math,
+#            the model card's totals and source names, the work package's steps,
+#            and the OpenAPI file against the API reference page
+#   openapi  Redocly CLI lints static/openapi/atlas-classify.yaml
+name: CI
+
+on:
+  push:
+  pull_request:
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    name: Build site
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0 # "last updated" dates come from Git history
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+      - name: Install
+        run: npm ci
+      - name: Build
+        run: npm run build
+
+  checks:
+    name: Sample checks (pytest)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+          cache-dependency-path: requirements-dev.txt
+      - name: Install
+        run: pip install -r requirements-dev.txt
+      - name: Run the sample checks
+        run: pytest
+
+  openapi:
+    name: OpenAPI lint
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - name: Lint the OpenAPI file
+        # Pinned so a new Redocly release can't change the result. Same command as README.md.
+        run: npx --yes @redocly/cli@2.70.0 lint static/openapi/atlas-classify.yaml

@@ -1,0 +1,8 @@
+# Redocly CLI configuration for the sample OpenAPI file.
+# Run locally with the same pinned version CI uses:
+#   npx --yes @redocly/cli@2.70.0 lint static/openapi/atlas-classify.yaml
+extends:
+  - recommended
+rules:
+  # The Atlas API is fictional on purpose, so its server lives on example.com.
+  no-server-example.com: off

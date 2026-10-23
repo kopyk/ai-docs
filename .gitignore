@@ -8,6 +8,11 @@
 .docusaurus
 .cache-loader
 
+# Python (sample checks in tests/)
+.venv
+__pycache__/
+.pytest_cache
+
 # Misc
 .DS_Store
 .env.local

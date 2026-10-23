@@ -1,0 +1,317 @@
+# OpenAPI 3.1 description of the fictional Atlas classification endpoint.
+#
+# This file is the machine-readable twin of docs/ai/api-reference.md. Every
+# field, type, range, default, error, and header here must match that page:
+# tests/test_openapi_spec.py compares the two, and Redocly CLI lints this file
+# in CI (.github/workflows/ci.yml).
+openapi: 3.1.0
+info:
+  title: Atlas Document Classification API
+  version: 1.0.0
+  summary: Classify a document into one or more of your labels.
+  description: |
+    **Sample content.** The Atlas API is fictional. Endpoints, fields, and limits
+    are illustrative and were written for Jordan Yan's documentation portfolio.
+    The human-readable reference is at
+    [ai.jordanyan.com/docs/ai/api-reference](https://ai.jordanyan.com/docs/ai/api-reference).
+  contact:
+    name: Jordan Yan
+    url: https://ai.jordanyan.com/about
+  license:
+    name: Sample content, not for production use
+    url: https://ai.jordanyan.com/about#about-these-samples
+
+servers:
+  - url: https://api.atlas.example.com
+    description: Fictional production server
+
+tags:
+  - name: Classification
+    description: Classify documents against labels you supply.
+
+security:
+  - bearerAuth: []
+
+paths:
+  /v1/classify:
+    post:
+      operationId: classifyDocument
+      tags: [Classification]
+      summary: Classify a document
+      description: |
+        Classifies a document into one or more of your labels and returns a
+        confidence score for each.
+
+        Confidence scores rank labels **for this request only**. A score of
+        0.94 does not mean the result is correct 94% of the time. To set a
+        threshold for production, test the endpoint on your own labeled
+        examples.
+
+        ## Rate limits
+
+        | Plan | Requests per minute | Characters per day |
+        |------|---------------------|--------------------|
+        | Free | 20 | 500,000 |
+        | Team | 600 | 50,000,000 |
+
+        Every response includes two headers: `X-RateLimit-Remaining` (requests
+        you can still make in the current minute) and `X-RateLimit-Reset`
+        (seconds until the window resets).
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ClassifyRequest'
+            examples:
+              hydraulicLeak:
+                summary: Single-label request with an explanation
+                value:
+                  text: The left landing gear actuator leaked hydraulic fluid during the preflight check.
+                  labels: [hydraulics, avionics, propulsion, structures]
+                  multi_label: false
+                  explain: true
+      responses:
+        '200':
+          description: The document was classified.
+          headers:
+            X-RateLimit-Remaining:
+              $ref: '#/components/headers/X-RateLimit-Remaining'
+            X-RateLimit-Reset:
+              $ref: '#/components/headers/X-RateLimit-Reset'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ClassifyResponse'
+              examples:
+                hydraulicLeak:
+                  summary: One label matched, with a reason
+                  value:
+                    id: cls_7f3a9c21
+                    matches:
+                      - label: hydraulics
+                        confidence: 0.94
+                        reason: Describes a hydraulic fluid leak from a landing gear actuator.
+                    scores:
+                      hydraulics: 0.94
+                      structures: 0.31
+                      avionics: 0.04
+                      propulsion: 0.02
+                    model: atlas-classify-2
+                    usage:
+                      input_characters: 82
+        '400':
+          description: A field is missing or out of range. Check `error.message` for the field name.
+          headers:
+            X-RateLimit-Remaining:
+              $ref: '#/components/headers/X-RateLimit-Remaining'
+            X-RateLimit-Reset:
+              $ref: '#/components/headers/X-RateLimit-Reset'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              examples:
+                invalidRequest:
+                  value:
+                    error:
+                      type: invalid_request
+                      message: labels must contain between 2 and 50 items.
+        '401':
+          description: API key is missing or invalid. Check the `Authorization` header.
+          headers:
+            X-RateLimit-Remaining:
+              $ref: '#/components/headers/X-RateLimit-Remaining'
+            X-RateLimit-Reset:
+              $ref: '#/components/headers/X-RateLimit-Reset'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              examples:
+                unauthorized:
+                  value:
+                    error:
+                      type: unauthorized
+                      message: Invalid API key.
+        '413':
+          description: '`text` is over 100,000 characters. Split the document and classify each part.'
+          headers:
+            X-RateLimit-Remaining:
+              $ref: '#/components/headers/X-RateLimit-Remaining'
+            X-RateLimit-Reset:
+              $ref: '#/components/headers/X-RateLimit-Reset'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              examples:
+                textTooLong:
+                  value:
+                    error:
+                      type: text_too_long
+                      message: text must be 100,000 characters or fewer.
+        '429':
+          description: Too many requests. Wait for the time in the `Retry-After` header, then retry.
+          headers:
+            Retry-After:
+              $ref: '#/components/headers/Retry-After'
+            X-RateLimit-Remaining:
+              $ref: '#/components/headers/X-RateLimit-Remaining'
+            X-RateLimit-Reset:
+              $ref: '#/components/headers/X-RateLimit-Reset'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              examples:
+                rateLimited:
+                  value:
+                    error:
+                      type: rate_limited
+                      message: Rate limit exceeded. Retry after 12 seconds.
+        '500':
+          description: Temporary problem on our side. Retry with exponential backoff.
+          headers:
+            X-RateLimit-Remaining:
+              $ref: '#/components/headers/X-RateLimit-Remaining'
+            X-RateLimit-Reset:
+              $ref: '#/components/headers/X-RateLimit-Reset'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              examples:
+                serverError:
+                  value:
+                    error:
+                      type: server_error
+                      message: Something went wrong. Please retry.
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      description: |
+        Send your API key in the `Authorization` header as `Bearer YOUR_API_KEY`.
+        Requests without a valid key return `401 unauthorized`.
+
+  headers:
+    X-RateLimit-Remaining:
+      description: Requests you can still make in the current minute.
+      schema:
+        type: integer
+        minimum: 0
+    X-RateLimit-Reset:
+      description: Seconds until the current per-minute window resets.
+      schema:
+        type: integer
+        minimum: 0
+    Retry-After:
+      description: Seconds to wait before retrying.
+      schema:
+        type: integer
+        minimum: 0
+
+  schemas:
+    ClassifyRequest:
+      type: object
+      additionalProperties: false
+      required: [text, labels]
+      properties:
+        text:
+          type: string
+          description: The document to classify. 1 to 100,000 characters.
+          minLength: 1
+          maxLength: 100000
+        labels:
+          type: array
+          description: The labels to choose from. 2 to 50 labels, each up to 100 characters.
+          minItems: 2
+          maxItems: 50
+          items:
+            type: string
+            maxLength: 100
+        multi_label:
+          type: boolean
+          description: If `true`, the document can match more than one label.
+          default: false
+        threshold:
+          type: number
+          description: Minimum confidence (0.0–1.0) for a label to count as a match.
+          minimum: 0.0
+          maximum: 1.0
+          default: 0.5
+        explain:
+          type: boolean
+          description: If `true`, include a one-sentence reason for each match.
+          default: false
+
+    ClassifyResponse:
+      type: object
+      required: [id, matches, scores, model, usage]
+      properties:
+        id:
+          type: string
+          description: Unique ID for this request. Include it when you contact support.
+        matches:
+          type: array
+          description: Labels at or above `threshold`, highest confidence first. Empty if none qualify.
+          items:
+            $ref: '#/components/schemas/Match'
+        scores:
+          type: object
+          description: Confidence for every label you sent, including those below `threshold`.
+          additionalProperties:
+            type: number
+            minimum: 0
+            maximum: 1
+        model:
+          type: string
+          description: The model version that produced the result.
+        usage:
+          $ref: '#/components/schemas/Usage'
+
+    Match:
+      type: object
+      required: [label, confidence]
+      properties:
+        label:
+          type: string
+          description: The matched label.
+        confidence:
+          type: number
+          description: Confidence from 0.0 to 1.0.
+          minimum: 0
+          maximum: 1
+        reason:
+          type: string
+          description: Present only when `explain` is `true`.
+
+    Usage:
+      type: object
+      required: [input_characters]
+      properties:
+        input_characters:
+          type: integer
+          description: Characters billed for this request.
+          minimum: 0
+
+    ErrorResponse:
+      type: object
+      required: [error]
+      properties:
+        error:
+          type: object
+          required: [type, message]
+          properties:
+            type:
+              type: string
+              description: Machine-readable error type.
+              enum: [invalid_request, unauthorized, text_too_long, rate_limited, server_error]
+            message:
+              type: string
+              description: Human-readable explanation, including the field name when a field is at fault.
