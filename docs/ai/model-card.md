@@ -5,9 +5,21 @@ sidebar_label: Model card
 hide_title: true
 ---
 
+import AboutSample from '@site/src/components/AboutSample';
+
 <p className="eyebrow">AI · Model card</p>
 
 # Model Card: SKYSWEEP FOD Detector v2.1
+
+<AboutSample
+  audience="Airfield operations leads deciding whether to rely on SKYSWEEP, and the review board that approves its use."
+  docType="Model card, mapped to the five DoD AI Ethical Principles (2020) and the four functions of the NIST AI RMF 1.0 (NIST AI 100-1)."
+  approach="Performance is reported per operating condition rather than as one average, so the fog limitation leads straight to its mitigation. Every number is fictional but internally consistent: the per-condition frame counts sum to the stated test set. The alignment tables point at sections that already exist instead of adding new claims."
+  proofs={['Sources checked', 'Totals verified']}>
+
+The principle and function names match the [DoD AI Ethical Principles on ai.mil](https://www.ai.mil/blog_02_24_20-dod-ai_principles.html) and [NIST AI 100-1](https://doi.org/10.6028/NIST.AI.100-1). [tests/test_model_card.py](https://github.com/kopyk/ai-docs/blob/main/tests/test_model_card.py) re-sums the frame counts (12,400) and checks both tables against those names on every push.
+
+</AboutSample>
 
 :::note Sample content
 SKYSWEEP is a fictional system. All metrics and datasets are illustrative.

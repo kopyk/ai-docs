@@ -5,6 +5,8 @@ sidebar_label: RAG tutorial
 hide_title: true
 ---
 
+import AboutSample from '@site/src/components/AboutSample';
+
 <p className="eyebrow">AI · Tutorial</p>
 
 # Tutorial: Build a Q&A Bot Over Your Docs
@@ -15,6 +17,16 @@ answers come from your documentation instead of the model's memory.
 
 **Time:** about 30 minutes  
 **You'll learn:** what retrieval-augmented generation (RAG) is, how to call the Claude API from Python, and how to write a system prompt that keeps answers grounded.
+
+<AboutSample
+  audience="Python developers who have not used the Claude API before and want a working tool in about 30 minutes."
+  docType="Task-based tutorial: prerequisites, numbered steps with the result the reader should see, troubleshooting, and next steps."
+  approach="The tutorial is a cut-down version of ask-my-docs, so every code block comes from a tool that runs. I kept keyword retrieval instead of embeddings so the whole pipeline fits in four blocks a reader can type in, and called out the trade-off in a note where it matters. Each step ends with what you should see, and the troubleshooting table maps each symptom to a cause and a fix."
+  proofs={['Code tested in CI']}>
+
+[tests/test_rag_tutorial.py](https://github.com/kopyk/ai-docs/blob/main/tests/test_rag_tutorial.py) extracts the four Python blocks from this page, runs them against a small fixture docs folder, and checks what `load_sections` and `find_relevant` return; the Claude call is replaced by a stand-in, so no key or network is needed. [GitHub Actions](https://github.com/kopyk/ai-docs/actions/workflows/ci.yml) runs it on every push.
+
+</AboutSample>
 
 ## Before you begin
 

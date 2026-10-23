@@ -5,11 +5,25 @@ sidebar_label: API reference
 hide_title: true
 ---
 
+import Tabs from '@theme/Tabs';
+import TabItem from '@theme/TabItem';
+import AboutSample from '@site/src/components/AboutSample';
+
 <p className="eyebrow">AI · API reference</p>
 
 # POST /v1/classify
 
 Classifies a document into one or more of your labels and returns a confidence score for each.
+
+<AboutSample
+  audience="Developers integrating the endpoint, who read the request table first and the prose only when something goes wrong."
+  docType="REST endpoint reference with a matching OpenAPI 3.1 description (fields, types, ranges, defaults, errors, headers, and authentication)."
+  approach="Every field in the tables appears in the OpenAPI file with the same type, range and default, and the file is the single source for the curl, Python and JavaScript examples. Errors are a table of status, machine-readable type, cause and what to do, because that is how they get looked up. The confidence tip answers the question support would otherwise get."
+  proofs={['OpenAPI spec validated']}>
+
+[Redocly CLI](https://github.com/kopyk/ai-docs/blob/main/.github/workflows/ci.yml) lints [atlas-classify.yaml](pathname:///openapi/atlas-classify.yaml) on every push, and [tests/test_openapi_spec.py](https://github.com/kopyk/ai-docs/blob/main/tests/test_openapi_spec.py) checks the file's fields, types, defaults, errors, headers and examples against the tables on this page.
+
+</AboutSample>
 
 :::note Sample content
 The Atlas API is fictional. Endpoints, fields, and limits are illustrative.
@@ -18,6 +32,9 @@ The Atlas API is fictional. Endpoints, fields, and limits are illustrative.
 ```http
 POST https://api.atlas.example.com/v1/classify
 ```
+
+**OpenAPI:** [Download the OpenAPI spec](pathname:///openapi/atlas-classify.yaml) (OpenAPI 3.1, YAML).
+The file is linted in CI and checked against this page.
 
 ## Authentication
 
@@ -41,6 +58,13 @@ Requests without a valid key return `401 unauthorized`.
 
 ## Example request
 
+The same request in three languages. The Atlas API is fictional, so these calls return nothing
+real; they show the shape of a correct call. Each one reads the key from the `ATLAS_API_KEY`
+environment variable instead of the source code.
+
+<Tabs groupId="lang">
+<TabItem value="curl" label="curl" default>
+
 ```bash
 curl https://api.atlas.example.com/v1/classify \
   -H "Authorization: Bearer $ATLAS_API_KEY" \
@@ -52,6 +76,65 @@ curl https://api.atlas.example.com/v1/classify \
     "explain": true
   }'
 ```
+
+</TabItem>
+<TabItem value="python" label="Python (requests)">
+
+```python
+import os
+
+import requests
+
+response = requests.post(
+    "https://api.atlas.example.com/v1/classify",
+    headers={"Authorization": f"Bearer {os.environ['ATLAS_API_KEY']}"},
+    json={
+        "text": "The left landing gear actuator leaked hydraulic fluid during the preflight check.",
+        "labels": ["hydraulics", "avionics", "propulsion", "structures"],
+        "multi_label": False,
+        "explain": True,
+    },
+    timeout=30,
+)
+if not response.ok:
+    error = response.json()["error"]
+    raise SystemExit(f"{response.status_code} {error['type']}: {error['message']}")
+
+result = response.json()
+for match in result["matches"]:
+    print(match["label"], match["confidence"], match.get("reason", ""))
+```
+
+</TabItem>
+<TabItem value="javascript" label="JavaScript (fetch)">
+
+```javascript
+const response = await fetch("https://api.atlas.example.com/v1/classify", {
+  method: "POST",
+  headers: {
+    Authorization: `Bearer ${process.env.ATLAS_API_KEY}`,
+    "Content-Type": "application/json",
+  },
+  body: JSON.stringify({
+    text: "The left landing gear actuator leaked hydraulic fluid during the preflight check.",
+    labels: ["hydraulics", "avionics", "propulsion", "structures"],
+    multi_label: false,
+    explain: true,
+  }),
+});
+if (!response.ok) {
+  const { error } = await response.json();
+  throw new Error(`${response.status} ${error.type}: ${error.message}`);
+}
+
+const result = await response.json();
+for (const match of result.matches) {
+  console.log(match.label, match.confidence, match.reason ?? "");
+}
+```
+
+</TabItem>
+</Tabs>
 
 ## Example response
 
@@ -122,4 +205,5 @@ Error responses use this shape:
 | Free | 20 | 500,000 |
 | Team | 600 | 50,000,000 |
 
-Every response includes `X-RateLimit-Remaining` and `X-RateLimit-Reset` headers.
+Every response includes two headers: `X-RateLimit-Remaining` (requests you can still make in the
+current minute) and `X-RateLimit-Reset` (seconds until the window resets).
