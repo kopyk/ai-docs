@@ -6,13 +6,13 @@ samples. The site is built with [Docusaurus](https://docusaurus.io/) 3.9 and has
 - **AI documentation:** model card, RAG tutorial, API reference, and LLM evaluation rubric
 - **Defense & aerospace:** maintenance procedure (work package) and interface control document
 
-It also has a **Projects** page (including [ask-my-docs](https://github.com/kopyk/ask-my-docs)) and an
-**About** page. All samples are original work written for this portfolio. Systems, part numbers and data
-are fictional. No CUI, export-controlled (ITAR/EAR) or proprietary information is included. The exception
-is the ask-my-docs tool, which is real.
+It also has a **Projects** page ([ask-my-docs](https://github.com/kopyk/ask-my-docs), the Gainwell
+Technologies EDI companion guides, and the Jungle Decision Framework site) and an **About** page. All
+samples are original work written for this portfolio. Systems, part numbers and data are fictional. No
+CUI, export-controlled (ITAR/EAR) or proprietary information is included.
 
 Each sample opens with an **About this sample** box (audience, document type, approach, how it was
-checked). The proof label in that box is only used where a check exists and runs in CI; see
+checked). Each proof label in that box corresponds to a check that runs in CI; see
 [Sample checks](#sample-checks).
 
 ## Project layout
@@ -24,7 +24,7 @@ checked). The proof label in that box is only used where a check exists and runs
 | `src/components/AboutSample/` | The "About this sample" box and the `ProofLabel` pill |
 | `src/css/custom.css` | Design tokens, theme overrides (light and dark), and the responsive layout rules |
 | `src/theme/` | A few small ejected or wrapped theme components (see [Swizzled components](#swizzled-components)) |
-| `src/clientModules/` | Browser-only behaviour registered in `docusaurus.config.js`: focus management for the mobile drawer, Tab stops only on tables that overflow, and a `main` landmark on the search page |
+| `src/clientModules/` | Browser-only behaviour registered in `docusaurus.config.js`: focus management for the mobile drawer, Tab stops only on tables that overflow, a `main` landmark on the search page, and ids, labels and Home/End keys for the API reference's language tabs |
 | `src/plugins/rehype-scroll-regions.mjs` | Build-time plugin that wraps tables and code blocks in labelled scroll regions and names them by heading; a client module removes `tabindex` from tables that don't overflow |
 | `sidebars.js` | The two docs sidebars |
 | `static/` | Favicons, social card, `robots.txt`, `llms.txt`, web manifest, `CNAME`, and `.nojekyll` |
@@ -36,18 +36,18 @@ checked). The proof label in that box is only used where a check exists and runs
 
 ## Sample checks
 
-Every proof label on the site is backed by something you can run. `.github/workflows/ci.yml` runs all of
-it on every push and pull request (Node 20, Python 3.12):
+Each proof label on the site has a check behind it. `.github/workflows/ci.yml` runs all of them on
+every push and pull request (Node 24, Python 3.12):
 
 | Check | What it proves | Label on the sample |
 |-------|----------------|---------------------|
-| `npm run build` | The site builds; broken links and anchors fail it | — |
-| `tests/test_rag_tutorial.py` | The Python blocks in `docs/ai/rag-tutorial.md` run as printed, against `tests/fixtures/docs`, with the Claude call replaced by a stand-in | Code tested in CI |
+| `npm run build` | The site builds; broken internal links and anchors fail it | — |
+| `tests/test_rag_tutorial.py` | The Python blocks in `docs/ai/rag-tutorial.md` run as printed, including the command-line entry point, against `tests/fixtures/docs`, with a fake `anthropic` module in place of the SDK | Code tested in CI |
 | `tests/test_icd_layout.py` | The ICD's byte ranges are contiguous, match their types, total 32 bytes, fit after scaling, and the CRC covers every byte before it | Layout verified |
 | `tests/test_eval_rubric.py` | The rubric's results table adds up (pass counts, rates, overall, scored example) | Math verified |
 | `tests/test_model_card.py` | Frame counts sum to the stated test set; DoD principle and NIST AI RMF function names match the sources | Sources checked, Totals verified |
 | `tests/test_maintenance_procedure.py` | Steps number continuously, every WARNING/CAUTION precedes a step, torque target is within the wrench range | Standards cited |
-| `tests/test_openapi_spec.py` + Redocly CLI | `static/openapi/atlas-classify.yaml` matches `docs/ai/api-reference.md` field for field and is valid OpenAPI 3.1 | OpenAPI spec validated |
+| `tests/test_openapi_spec.py` + Redocly CLI | `static/openapi/atlas-classify.yaml` matches `docs/ai/api-reference.md` field for field, descriptions included, and is valid OpenAPI 3.1 | OpenAPI spec validated |
 
 Run them locally:
 
@@ -105,7 +105,7 @@ npm run serve     # serve the production build locally
 
 `npm start` doesn't build the search index. To test search, run `npm run build` and then `npm run serve`.
 
-The build fails on broken links and anchors (`onBrokenLinks: 'throw'`), so fix any it reports before you push.
+The build fails on broken internal links and anchors (`onBrokenLinks: 'throw'`), so fix any it reports before you push. External links aren't checked.
 
 "Last updated" dates come from Git history. The build needs at least one commit, and the deploy
 workflow checks out full history (`fetch-depth: 0`) so the dates are accurate.
