@@ -18,10 +18,10 @@ import AboutSample from '@site/src/components/AboutSample';
 <AboutSample
   audience="Field-level technicians performing the task, and the quality reviewer who approves the work package."
   docType="Work package in the MIL-STD-40051-2 structure (prerequisites, procedure, follow-on maintenance) with WARNING, CAUTION and NOTE advisories as defined in MIL-STD-38784B."
-  approach="Conditions, tools and parts come before the first step, and every advisory precedes the step it protects. Steps number continuously across removal, inspection and installation, so a technician can report exactly where they stopped. Part numbers and torque values are fictional but checked against each other: the torque target falls inside the listed wrench's range and the steps use the socket the tools table lists."
+  approach="Conditions, tools and parts come before the first step, every advisory precedes the step it protects, and steps number continuously so a technician can report exactly where they stopped."
   proofs={['Standards cited']}>
 
-The advisory definitions follow [MIL-STD-38784B](https://everyspec.com/MIL-STD/MIL-STD-10000-and-Up/MIL-STD-38784B_57086/) and the work-package layout follows [MIL-STD-40051-2](https://everyspec.com/MIL-STD/MIL-STD-10000-and-Up/MIL-STD-40051-2C_53570/) (both are public on ASSIST and EverySpec). [tests/test_maintenance_procedure.py](https://github.com/kopyk/ai-docs/blob/main/tests/test_maintenance_procedure.py) checks on every push that the steps number continuously, that every WARNING and CAUTION precedes a step, and that the torque target is within the wrench range.
+The advisory definitions follow [MIL-STD-38784B](https://everyspec.com/MIL-STD/MIL-STD-10000-and-Up/MIL-STD-38784B_57086/) and the work-package layout follows [MIL-STD-40051-2](https://everyspec.com/MIL-STD/MIL-STD-10000-and-Up/MIL-STD-40051-2C_53570/); [a test](https://github.com/kopyk/ai-docs/blob/main/tests/test_maintenance_procedure.py) checks the step numbering, the advisory placement and the torque range on every change.
 
 </AboutSample>
 

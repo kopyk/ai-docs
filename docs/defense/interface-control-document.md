@@ -18,10 +18,10 @@ import AboutSample from '@site/src/components/AboutSample';
 <AboutSample
   audience="Ground-station software engineers implementing the message parser, and the integration team verifying it against the air vehicle."
   docType="Interface control document excerpt: a byte-level message layout with units, scale and range, an enumeration, a bitfield, requirements traceability, and a revision history."
-  approach="The layout table carries units, scale and range in the same row as the byte offsets, so an engineer can write the decode in one pass without cross-referencing. Reserved values and bits say what the receiver must do with them. Each requirement names its verification method, and each revision names the change board that approved it."
+  approach="The layout table carries units, scale and range in the same row as the byte offsets, so an engineer can write the decoder in one pass, and reserved values and bits say what the receiver must do with them."
   proofs={['Layout verified']}>
 
-[tests/test_icd_layout.py](https://github.com/kopyk/ai-docs/blob/main/tests/test_icd_layout.py) parses the layout table on every push and checks that the byte ranges are contiguous and non-overlapping, that each field's size matches its type, that the fields total the stated 32 bytes, that the CRC covers every byte before it, that every range fits its type after scaling, and that the enumeration and bitfield cover every value and bit.
+[A test](https://github.com/kopyk/ai-docs/blob/main/tests/test_icd_layout.py) checks the byte layout on every change: the offsets are contiguous, each size matches its type, the fields total 32 bytes, and the CRC covers every byte before it.
 
 </AboutSample>
 

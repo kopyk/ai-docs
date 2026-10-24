@@ -18,10 +18,10 @@ Classifies a document into one or more of your labels and returns a confidence s
 <AboutSample
   audience="Developers integrating the endpoint, who read the request table first and the prose only when something goes wrong."
   docType="REST endpoint reference with a matching OpenAPI 3.1 description (fields, types, ranges, defaults, errors, headers, and authentication)."
-  approach="Every field in the tables appears in the OpenAPI file with the same type, range and default, and the file is the single source for the curl, Python and JavaScript examples. Errors are a table of status, machine-readable type, cause and what to do, because that is how they get looked up. The confidence tip answers the question support would otherwise get."
+  approach="The tables and the OpenAPI file describe the same fields, types, ranges and defaults, and errors are a table of status, type, cause and what to do, because that is how developers look them up."
   proofs={['OpenAPI spec validated']}>
 
-[Redocly CLI](https://github.com/kopyk/ai-docs/blob/main/.github/workflows/ci.yml) lints [atlas-classify.yaml](pathname:///openapi/atlas-classify.yaml) on every push, and [tests/test_openapi_spec.py](https://github.com/kopyk/ai-docs/blob/main/tests/test_openapi_spec.py) checks the file's fields, types, defaults, errors, headers and examples against the tables on this page.
+[Redocly CLI](https://github.com/kopyk/ai-docs/blob/main/.github/workflows/ci.yml) lints [the OpenAPI file](pathname:///openapi/atlas-classify.yaml) and [a test](https://github.com/kopyk/ai-docs/blob/main/tests/test_openapi_spec.py) compares it with this page on every change.
 
 </AboutSample>
 
@@ -60,11 +60,13 @@ Requests without a valid key return `401 unauthorized`.
 
 </div>
 
+Unknown fields are rejected with `400 invalid_request`.
+
 ## Example request
 
-The same request in three languages. The Atlas API is fictional, so these calls return nothing
-real; they show the shape of a correct call. Each one reads the key from the `ATLAS_API_KEY`
-environment variable instead of the source code.
+The same request in curl, Python (with `requests`) and JavaScript (with `fetch`). The Atlas API is
+fictional, so these calls return nothing real; they show the shape of a correct call. Each one
+reads the key from the `ATLAS_API_KEY` environment variable instead of the source code.
 
 <Tabs groupId="lang">
 <TabItem value="curl" label="curl" default>
@@ -82,7 +84,7 @@ curl https://api.atlas.example.com/v1/classify \
 ```
 
 </TabItem>
-<TabItem value="python" label="Python (requests)">
+<TabItem value="python" label="Python">
 
 ```python
 import os
@@ -110,7 +112,7 @@ for match in result["matches"]:
 ```
 
 </TabItem>
-<TabItem value="javascript" label="JavaScript (fetch)">
+<TabItem value="javascript" label="JavaScript">
 
 ```javascript
 const response = await fetch("https://api.atlas.example.com/v1/classify", {
@@ -191,7 +193,7 @@ correct 94% of the time. To set a threshold for production, test the endpoint on
 
 | HTTP status | `error.type` | Cause | What to do |
 |-------------|--------------|-------|------------|
-| 400 | `invalid_request` | A field is missing or out of range | Check `error.message` for the field name |
+| 400 | `invalid_request` | A field is missing, unknown, or out of range | Check `error.message` for the field name |
 | 401 | `unauthorized` | API key is missing or invalid | Check the `Authorization` header |
 | 413 | `text_too_long` | `text` is over 100,000 characters | Split the document and classify each part |
 | 429 | `rate_limited` | Too many requests | Wait for the time in the `Retry-After` header, then retry |

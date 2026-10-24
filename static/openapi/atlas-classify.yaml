@@ -103,7 +103,7 @@ paths:
                     usage:
                       input_characters: 81
         '400':
-          description: A field is missing or out of range. Check `error.message` for the field name.
+          description: A field is missing, unknown, or out of range. Check `error.message` for the field name.
           headers:
             X-RateLimit-Remaining:
               $ref: '#/components/headers/X-RateLimit-Remaining'

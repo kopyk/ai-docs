@@ -20,10 +20,10 @@ failures before users do.
 <AboutSample
   audience="Engineers and reviewers grading a documentation Q&A assistant, by hand or with an LLM as the grader."
   docType="Evaluation guide: a pass/fail rubric, a test-set design table, a worked scored example, and a results report by question type."
-  approach="Each criterion has a pass rule and a fail rule, so two graders reach the same score. The results table is built so a reader can spot the failure (out-of-scope questions) that the overall number hides. The scored example follows the guide's own advice: the reference answer was written before the assistant's answer was graded."
+  approach="Each criterion has a pass rule and a fail rule so two graders reach the same score, and results are reported by question type so the failure the overall number hides stays visible."
   proofs={['Math verified']}>
 
-[tests/test_eval_rubric.py](https://github.com/kopyk/ai-docs/blob/main/tests/test_eval_rubric.py) recomputes the results table from this page on every push: each pass rate must be a whole number of answers, the per-type counts must sum to the overall n, the overall rate must equal total passes over total questions, and the scored example's total and verdict must follow the rubric.
+[A test](https://github.com/kopyk/ai-docs/blob/main/tests/test_eval_rubric.py) recomputes the results table and the scored example on every change.
 
 </AboutSample>
 
@@ -49,7 +49,7 @@ A complete but wrong answer is worse than an incomplete one.
 
 A rubric is only as good as the questions it grades. Include all four question types:
 
-<div className="text-col-3">
+<div className="text-col-3 label-table">
 
 | Type | Share | Example | What it tests |
 |------|-------|---------|---------------|

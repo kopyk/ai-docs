@@ -54,7 +54,7 @@ def test_dod_principles_are_named_as_published(doc):
 
 def test_nist_ai_rmf_functions_are_named_as_published(doc):
     rows = table_under_heading(doc, "5. Responsible AI Alignment", index=1)
-    assert [row["NIST AI RMF function"] for row in rows] == NIST_AI_RMF_FUNCTIONS
+    assert [row["NIST function"] for row in rows] == NIST_AI_RMF_FUNCTIONS
     assert "AI RMF 1.0, January 2023" in doc, "the framework version and date match NIST AI 100-1"
 
 

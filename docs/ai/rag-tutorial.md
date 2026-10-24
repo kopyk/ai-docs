@@ -21,10 +21,10 @@ answers come from your documentation instead of the model's memory.
 <AboutSample
   audience="Python developers who have not used the Claude API before and want a working tool in about 30 minutes."
   docType="Task-based tutorial: prerequisites, numbered steps with the result the reader should see, troubleshooting, and next steps."
-  approach="The tutorial is a cut-down version of ask-my-docs, so every code block comes from a tool that runs. I kept keyword retrieval instead of embeddings so the whole pipeline fits in four blocks a reader can type in, and called out the trade-off in a note where it matters. Each step ends with what you should see, and the troubleshooting table maps each symptom to a cause and a fix."
+  approach="A cut-down version of ask-my-docs: keyword retrieval instead of embeddings, so the whole pipeline fits in four code blocks a reader can type in, with the trade-off called out where it matters."
   proofs={['Code tested in CI']}>
 
-[tests/test_rag_tutorial.py](https://github.com/kopyk/ai-docs/blob/main/tests/test_rag_tutorial.py) extracts the four Python blocks from this page, runs them against a small fixture docs folder, and checks what `load_sections` and `find_relevant` return; the Claude call is replaced by a stand-in, so no key or network is needed. [GitHub Actions](https://github.com/kopyk/ai-docs/actions/workflows/ci.yml) runs it on every push.
+[A test](https://github.com/kopyk/ai-docs/blob/main/tests/test_rag_tutorial.py) runs the four Python blocks on this page against a small docs folder on every change.
 
 </AboutSample>
 
@@ -41,11 +41,15 @@ You need:
 A language model only knows what it learned in training and what you put in the prompt.
 **Retrieval-augmented generation** adds a search step before the model answers:
 
+<div className="label-table">
+
 | Step | What happens | Why it matters |
 |------|--------------|----------------|
 | **1. Retrieve** | Search your documents for passages that match the question | The model sees your current, specific content |
 | **2. Augment** | Add those passages to the prompt | The answer is grounded in text you can check |
 | **3. Generate** | The model answers using the passages | Less guessing, and answers can cite sources |
+
+</div>
 
 ## Step 1: Set up the project
 
@@ -183,7 +187,7 @@ You should see an answer followed by a `Sources:` line naming the files Claude u
 
 | Problem | Cause | Fix |
 |---------|-------|-----|
-| `TypeError: Could not resolve authentication method` | `ANTHROPIC_API_KEY` isn't set in this terminal | Run `export ANTHROPIC_API_KEY="your-key-here"` (step 3), then run `ask.py` again |
+| `TypeError: Could not resolve authentication method` | `ANTHROPIC_API_KEY` isn't set in this terminal | Run `export ANTHROPIC_API_KEY="your-key-here"` ([Step 1](#step-1-set-up-the-project), item 3), then run `ask.py` again |
 | `anthropic.AuthenticationError` (401) | The API key is wrong or has been revoked | Run `echo $ANTHROPIC_API_KEY` to check it, or create a new key in the Claude Console |
 | Answer says the docs don't cover it, but they do | Keyword search missed the section | Rephrase using words from the docs, or raise `k` |
 | `ModuleNotFoundError: No module named 'anthropic'` | Virtual environment isn't active | Run `source .venv/bin/activate`, or run `pip install anthropic` |

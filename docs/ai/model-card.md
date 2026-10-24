@@ -14,10 +14,10 @@ import AboutSample from '@site/src/components/AboutSample';
 <AboutSample
   audience="Airfield operations leads deciding whether to rely on SKYSWEEP, and the review board that approves its use."
   docType="Model card, mapped to the five DoD AI Ethical Principles (2020) and the four functions of the NIST AI RMF 1.0 (NIST AI 100-1)."
-  approach="Performance is reported per operating condition rather than as one average, so the fog limitation leads straight to its mitigation. Every number is fictional but internally consistent: the per-condition frame counts sum to the stated test set. The alignment tables point at sections that already exist instead of adding new claims."
+  approach="Performance is reported per operating condition rather than as one average, so the fog limitation leads straight to its mitigation, and each row of the alignment tables points to the section that supports it."
   proofs={['Sources checked', 'Totals verified']}>
 
-The principle and function names match the [DoD AI Ethical Principles on ai.mil](https://www.ai.mil/blog_02_24_20-dod-ai_principles.html) and [NIST AI 100-1](https://doi.org/10.6028/NIST.AI.100-1). [tests/test_model_card.py](https://github.com/kopyk/ai-docs/blob/main/tests/test_model_card.py) re-sums the frame counts (12,400) and checks both tables against those names on every push.
+The principle and function names match the [DoD AI Ethical Principles](https://www.ai.mil/blog_02_24_20-dod-ai_principles.html) and [NIST AI 100-1](https://doi.org/10.6028/NIST.AI.100-1), and [a test](https://github.com/kopyk/ai-docs/blob/main/tests/test_model_card.py) checks the names and re-sums the frame counts on every change.
 
 </AboutSample>
 
@@ -44,6 +44,8 @@ personnel can inspect and clear it.
 
 **Decision authority:** SKYSWEEP is a **decision-support tool**. A trained human confirms every
 detection before any runway closure or clearance action.
+
+**Deactivation:** Operators can disable SKYSWEEP at any time; scheduled FOD walks continue as normal.
 
 ### Out-of-scope uses
 
@@ -95,16 +97,16 @@ doubles the false-alarm rate.
 This section maps the model to the **DoD AI Ethical Principles** and the **NIST Artificial Intelligence
 Risk Management Framework (AI RMF 1.0, January 2023)**.
 
-| DoD principle | How SKYSWEEP addresses it |
-|---------------|---------------------------|
+| DoD principle | How it is addressed |
+|---------------|---------------------|
 | **Responsible** | Humans confirm every detection; the model cannot close or clear a runway |
 | **Equitable** | Test set spans three unseen airfields and four lighting/weather conditions, with results reported per condition (Section 2) to expose uneven performance |
 | **Traceable** | Training data lineage, labeling procedures, and model versions are recorded |
 | **Reliable** | Performance reported per operating condition, not as a single average |
-| **Governable** | Operators can disable the model; image-quality checks halt inference automatically |
+| **Governable** | Operators can disable the model (Section 1); the image-quality check halts inference and alerts the operator (Section 4) |
 
-| NIST AI RMF function | Artifact |
-|----------------------|----------|
+| NIST function | Artifact |
+|---------------|----------|
 | **Govern** | Model owner and last-review date listed in this card; re-validation required before deployment at any new airfield (Section 4) |
 | **Map** | Intended and out-of-scope uses (Section 1) |
 | **Measure** | Condition-level metrics (Section 2) |
