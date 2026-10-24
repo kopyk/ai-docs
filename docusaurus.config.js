@@ -62,6 +62,7 @@ const config = {
     './src/clientModules/mobileDrawerFocus.js',
     './src/clientModules/scrollRegions.js',
     './src/clientModules/searchMain.js',
+    './src/clientModules/tabsA11y.js',
   ],
 
   stylesheets: [

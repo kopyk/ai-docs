@@ -14,6 +14,8 @@
  *   it contains the drawer. Docusaurus's own inert toggling between the
  *   primary and secondary panels is untouched.
  * - closes it on Escape, by clicking the close button
+ * - after "Back to main menu" switches the panels, moves focus to the first
+ *   link of the panel that is now live (the button it was on becomes inert)
  * When the drawer closes by any route, the inert attributes are removed and
  * focus returns to the toggle, unless it closed because a link to another
  * page was followed; then the route change is left to handle focus.
@@ -64,8 +66,28 @@ function onKeyDown(event) {
   }
 }
 
+// After "Back to main menu", Docusaurus makes the secondary panel inert, so
+// the button that had focus can no longer hold it. Focus the first link of the
+// panel that is now live, once the inert attributes have been swapped.
+function focusLivePanel(sidebar) {
+  window.requestAnimationFrame(() => {
+    if (!open) {
+      return;
+    }
+    const panel = [...sidebar.querySelectorAll('.navbar-sidebar__item')].find(
+      (item) => !item.hasAttribute('inert'),
+    );
+    const target = panel?.querySelector('.menu__link') ?? sidebar.querySelector('.navbar-sidebar__close');
+    target?.focus({preventScroll: true});
+  });
+}
+
 // A click on a link to another page closes the drawer through navigation.
 function onDrawerClick(event) {
+  if (event.target.closest('.navbar-sidebar__back')) {
+    focusLivePanel(event.currentTarget);
+    return;
+  }
   const link = event.target.closest('a[href]');
   if (!link) {
     return;

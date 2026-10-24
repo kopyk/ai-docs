@@ -130,7 +130,8 @@ html[data-theme='dark'] {
  *   997–1199   small desktop: 248px sidebar + article; "On this page" is the
  *              inline bar at the top of the article (the TOC rail doesn't fit)
  *   ≥1100      landing: two-column hero and bento
- *   ≥1200      desktop: 280px sidebar / 760px article / 224px TOC rail
+ *   1200–1339  desktop: 248px sidebar / article up to 760px / 200px TOC rail
+ *   ≥1340      desktop: 280px sidebar / 760px article / 224px TOC rail
  *
  * Docusaurus switches its own shell (drawer vs sidebar) at 996/997px, so the
  * rules below keep that seam. Hashed CSS-module class names are matched with
@@ -298,9 +299,11 @@ h4 {
   }
 }
 
-/* ≥1200: fixed 224px TOC rail; the article takes the rest, up to 760px. The
+/* ≥1200: fixed TOC rail; the article takes the rest, up to 760px. The
    article and rail are centred together in the main column, so wide screens
-   don't leave all the spare width on the right. */
+   don't leave all the spare width on the right. From 1340 the rails are
+   280 / 224; at 1200–1339 they narrow to 248 / 200 so the article keeps its
+   width on 1280px laptops. */
 @media (min-width: 1200px) {
   main[class*='docMainContainer'] > .container > .row {
     justify-content: center;
@@ -318,12 +321,26 @@ h4 {
   }
 }
 
+@media (min-width: 1200px) and (max-width: 1339px) {
+  :root {
+    --doc-sidebar-width: 248px;
+  }
+
+  main[class*='docMainContainer'] .row > [class*='docItemCol'] + .col {
+    flex: 0 0 calc(200px + 2 * var(--ifm-spacing-horizontal));
+    max-width: calc(200px + 2 * var(--ifm-spacing-horizontal));
+  }
+}
+
 /* ≥1440: Infima widens every .container to --ifm-container-width-xl (1400px,
    set above for the docs shell). Keep that for the docs shell only; the
    landing page, footer and other pages stay at the 1140px container, so their
-   side margins grow steadily instead of dropping from 166px to 36px. */
+   side margins grow steadily instead of dropping from 166px to 36px. The
+   search page is excluded here because it keeps its own 760px column (see
+   "Search results page"); the build groups media queries at the end of the
+   file, so a later rule of equal specificity would not win. */
 @media (min-width: 1440px) {
-  .container:not(main[class*='docMainContainer'] > .container) {
+  .container:not(main[class*='docMainContainer'] > .container, :has([class*='searchQueryInput'])) {
     max-width: var(--ifm-container-width);
   }
 }
@@ -813,11 +830,29 @@ summary:focus-visible,
     outline-offset: 0;
   }
 
-  [class*='searchBar'] [class*='dropdownMenu'] {
+  /* `.navbar` is in the selector so this beats the plugin's 340px width. */
+  .navbar [class*='searchBar'] [class*='dropdownMenu'] {
     left: 0 !important;
     right: 0 !important;
     width: auto;
     max-width: none;
+  }
+
+  /* Hits may take two lines, so the matched word stays visible; the path
+     below stays on one line with an ellipsis. */
+  .navbar [class*='searchBar'] [class*='dropdownMenu'] [class*='suggestion_'] {
+    height: auto;
+    min-height: 56px;
+    padding-top: 8px;
+    padding-bottom: 8px;
+  }
+
+  .navbar [class*='hitTitle'] {
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 2;
+    overflow: hidden;
+    white-space: normal;
   }
 }
 
@@ -1045,6 +1080,26 @@ summary:focus-visible,
 
 .theme-doc-toc-mobile > button:focus-visible {
   outline-offset: -2px;
+}
+
+/* Short viewports (landscape phones, 400% zoom): the navbar and the bar
+   together would take most of the screen, so the bar scrolls with the page.
+   `relative`, not `static`, because the panel is positioned against it. */
+@media (max-height: 480px) {
+  .theme-doc-toc-mobile {
+    position: relative;
+    top: auto;
+  }
+
+  html.docs-doc-page {
+    scroll-padding-top: calc(var(--ifm-navbar-height) + 0.75rem);
+  }
+}
+
+/* The back-to-top button would sit over the open "On this page" list. */
+body:has(.theme-doc-toc-mobile button[aria-expanded='true']) .theme-back-to-top-button {
+  visibility: hidden;
+  opacity: 0;
 }
 
 .theme-doc-toc-mobile .toc-collapsible-panel {
@@ -1355,10 +1410,17 @@ pre code,
   .theme-code-block [class*='buttonGroup'] button:focus-visible {
     border-color: transparent;
   }
+
+  /* The card clips overflow, so the ring is drawn inside the 44px button. */
+  .theme-code-block [class*='buttonGroup'] button:focus-visible {
+    outline-offset: -2px;
+    border-radius: 0;
+  }
 }
 
 @media (max-width: 639px) {
-  :is(.markdown, .mdx-page article) > .code-region > .theme-code-block {
+  :is(.markdown, .mdx-page article) > .code-region > .theme-code-block,
+  :is(.markdown, .mdx-page article) > .tabs-container .theme-code-block {
     margin-left: calc(-1 * var(--ifm-spacing-horizontal));
     margin-right: calc(-1 * var(--ifm-spacing-horizontal));
     border-left: 0;
@@ -1498,12 +1560,18 @@ pre code,
   }
 }
 
-/* Evidence tables on About and Projects: short labels in the first column
-   stay on one line on desktop. Not .wide-table, whose nowrap applies at every
-   width and would widen the sticky column on phones. */
+/* Tables with short row labels (marked with <div className="label-table">):
+   the first column stays on one line on desktop. Not .wide-table, whose
+   nowrap applies at every width and would widen the sticky column on phones. */
 @media (min-width: 997px) {
   :is(.markdown, .mdx-page article) .label-table table :is(th, td):first-child {
     white-space: nowrap;
+  }
+
+  /* Code outside the first column may wrap at its spaces, so a long command
+     in a Fix column doesn't push the table past the article on laptops. */
+  :is(.markdown, .mdx-page article) .table-scroll table td:not(:first-child) code {
+    white-space: normal;
   }
 }
 
@@ -1513,8 +1581,13 @@ pre code,
   white-space: nowrap;
 }
 
+/* The Range column ("−4,294,967,295 to …") may wrap; the rest stay whole. */
+:is(.markdown, .mdx-page article) .wide-table table td:nth-last-child(2) {
+  white-space: normal;
+}
+
 :is(.markdown, .mdx-page article) .wide-table table td:last-child {
-  min-width: 14rem;
+  min-width: 11rem;
 }
 
 /* About and Projects: facts aside. Desktop: 240px column beside a 760px body.
@@ -1565,10 +1638,55 @@ pre code,
   line-height: 1.45;
 }
 
+/* "On this page" list under the facts: compact links, 44px rows on the
+   mobile shell. */
+.page-aside nav {
+  margin-top: 1.25rem;
+}
+
+.page-aside .page-aside__nav {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  font-size: 0.875rem;
+  line-height: 1.4;
+}
+
+.page-aside .page-aside__nav li {
+  margin: 0;
+}
+
+/* Outranks the article's underlined-link rule: a list of links needs no
+   underline to be recognised as links (like the TOC rail). */
+.mdx-page article .page-aside .page-aside__nav a {
+  display: flex;
+  align-items: center;
+  min-height: 44px;
+  color: var(--jy-text-2);
+  text-decoration: none;
+}
+
+.mdx-page article .page-aside .page-aside__nav a:hover {
+  color: var(--jy-text);
+  text-decoration: underline;
+}
+
 @media (min-width: 640px) and (max-width: 1199px) {
   .page-facts {
     grid-template-columns: repeat(2, minmax(0, 1fr));
     gap: 1rem 1.5rem;
+  }
+
+  .page-aside .page-aside__nav {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0 1.5rem;
+  }
+}
+
+@media (min-width: 997px) {
+  .mdx-page article .page-aside .page-aside__nav a {
+    min-height: 32px;
   }
 }
 
@@ -1583,6 +1701,15 @@ pre code,
     float: right;
     width: 240px;
     margin: 0.25rem calc(-240px - 3rem) 2rem 0;
+  }
+}
+
+/* The aside follows the reader down the page on screens tall enough to show
+   all of it; on short screens it scrolls with the page. */
+@media (min-width: 1200px) and (min-height: 720px) {
+  html.page-with-aside .page-aside {
+    position: sticky;
+    top: calc(var(--ifm-navbar-height) + 1.5rem);
   }
 }
 
@@ -1772,21 +1899,21 @@ pre code,
     margin: 0;
   }
 
-  /* Audience and Document type side by side, each label above its text.
-     align-items: start keeps a short value at the top when its neighbour
-     wraps further. */
+  /* Every fact has its label above its text, so each text edge starts at the
+     same point. Audience and Document type sit side by side; align-items:
+     start keeps a short value at the top when its neighbour wraps further. */
   .about-sample__facts--top {
     grid-template-columns: 1fr 1fr;
     align-items: start;
     gap: 0.5rem 1.5rem;
   }
 
-  .about-sample__facts--top > div {
+  .about-sample__facts > div {
     grid-template-columns: none;
     gap: 0.125rem;
   }
 
-  .about-sample__facts--top dt {
+  .about-sample__facts dt {
     padding-top: 0;
   }
 
@@ -1933,7 +2060,8 @@ pre code,
   }
 }
 
-/* Search results page */
+/* Search results page: a 760px column at every width (the ≥1440 container
+   rule above leaves it out). */
 
 div.container:has([class*='searchQueryInput']) {
   max-width: calc(760px + 2 * var(--ifm-spacing-horizontal));
