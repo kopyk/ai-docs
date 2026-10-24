@@ -2,8 +2,9 @@
 
 Parses the tables and examples in docs/ai/api-reference.md and compares them
 with static/openapi/atlas-classify.yaml: the endpoint and server, the
-authentication scheme, every request field (type, required, limits, default),
-every response field, every error status and type, the rate-limit headers, the
+authentication scheme, every request field (type, required, limits, default,
+description), every response field (type, description), every error status
+and type with its cause and what-to-do text, the rate-limit headers, the
 rate-limit table, the example response, and the three example requests (curl,
 Python and JavaScript), which must all send the spec's request example and read
 only response fields the spec defines. Redocly CLI lints the file separately in
@@ -96,6 +97,9 @@ def test_request_fields_match_the_request_body_table(doc, spec, operation):
     assert body["required"] is True
     schema = resolve(spec, body["content"]["application/json"]["schema"])
     assert schema.get("additionalProperties") is False, "unknown fields are rejected (400 invalid_request)"
+    cause_400 = {row["HTTP status"]: row["Cause"] for row in table_under_heading(doc, "Errors")}["400"]
+    assert "unknown" in cause_400.lower(), "the 400 row on the page says that unknown fields are rejected"
+    assert "Unknown fields are rejected with `400 invalid_request`" in doc
     assert set(schema["properties"]) == {row["Field"] for row in rows}
     assert set(schema.get("required", [])) == {row["Field"] for row in rows if row["Required"] == "Yes"}
 
@@ -142,6 +146,27 @@ def test_response_fields_match_the_response_fields_table(doc, spec, operation):
     documented_top_level = {row["Field"].split(".")[0].split("[")[0] for row in rows}
     assert set(top_level["properties"]) == documented_top_level
     assert set(top_level["required"]) == documented_top_level, "every top-level response field is always present"
+
+
+def norm(text):
+    """Compare prose loosely: no backticks, single spaces, no trailing full stop."""
+    return re.sub(r"\s+", " ", text.replace("`", "")).strip().rstrip(".")
+
+
+def test_descriptions_match_the_page(doc, spec, operation):
+    """Field descriptions and error guidance say the same thing in both places."""
+    request_schema = resolve(spec, operation["requestBody"]["content"]["application/json"]["schema"])
+    for row in table_under_heading(doc, "Request body"):
+        page_text = re.sub(r"\s*Default: \S+?\.?$", "", row["Description"])
+        assert norm(page_text) == norm(resolve(spec, request_schema["properties"][row["Field"]])["description"]), row["Field"]
+
+    response_schema = operation["responses"]["200"]["content"]["application/json"]["schema"]
+    for row in table_under_heading(doc, "Response fields"):
+        assert norm(row["Description"]) == norm(schema_at(spec, response_schema, row["Field"])["description"]), row["Field"]
+
+    for row in table_under_heading(doc, "Errors"):
+        page_text = f"{row['Cause']}. {row['What to do']}."
+        assert norm(page_text) == norm(operation["responses"][row["HTTP status"]]["description"]), row["HTTP status"]
 
 
 def test_errors_match_the_errors_table(doc, spec, operation):

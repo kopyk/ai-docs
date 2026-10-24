@@ -3,9 +3,11 @@
 Extracts the ```python blocks from docs/ai/rag-tutorial.md in order, executes
 them in one namespace (the way a reader would build ask.py step by step), and
 checks the retrieval functions against the fixture docs in tests/fixtures/docs.
+A final test runs the blocks as __main__, so the command-line entry point is
+exercised too.
 
-The Claude call is never made: a stand-in `anthropic` module is installed
-before the blocks run, so the test needs no API key and no network.
+The Claude call is never made: a fake `anthropic` module is installed before
+the blocks run, so the test needs no API key and no network.
 """
 
 import sys
@@ -134,6 +136,24 @@ def test_ask_claude_sends_the_sections_and_question_without_a_network_call(tutor
         assert f'<section source="{source}">' in prompt
         assert text in prompt
     assert prompt.rstrip().endswith("Question: What torque does the propeller nut take?")
+
+
+def test_entry_point_answers_a_question_from_the_command_line(monkeypatch, capsys):
+    """Run as `python ask.py <docs> <question>`, the blocks print the answer and its sources."""
+    blocks = fenced_blocks(read_doc(DOC_PATH), "python")
+    fake_anthropic = types.ModuleType("anthropic")
+    fake_anthropic.Anthropic = FakeAnthropic
+    monkeypatch.setitem(sys.modules, "anthropic", fake_anthropic)
+    monkeypatch.setattr(sys, "argv", ["ask.py", str(FIXTURE_DOCS), "What torque does the propeller nut take?"])
+    FakeAnthropic.calls.clear()
+
+    namespace = {"__name__": "__main__"}
+    for index, block in enumerate(blocks, start=1):
+        code = compile(block, f"rag-tutorial.md (python block {index})", "exec")
+        exec(code, namespace)  # noqa: S102 - the point of the test is to run the tutorial
+
+    assert capsys.readouterr().out.rstrip().endswith("Sources: maintenance-procedure.md")
+    assert len(FakeAnthropic.calls) == 1, "the entry point calls Claude exactly once"
 
 
 def test_prose_matches_the_code(tutorial):
