@@ -1,8 +1,8 @@
 # Jordan Yan · AI Documentation
 
-> Technical writing samples by Jordan Yan: an AI model card, a RAG tutorial, an API reference and an LLM evaluation rubric, plus a defense maintenance work package and an interface control document. All samples are original work; the systems, part numbers and data in them are fictional. No CUI, export-controlled (ITAR/EAR) or proprietary information is included. The projects page describes real work: ask-my-docs (a tested, evaluated RAG tool), the Gainwell Technologies EDI companion guides, and the Jungle Decision Framework documentation site.
+> Technical writing samples by Jordan Yan, Technical Writer II at Zone 5 Technologies: an AI model card, a RAG tutorial, an API reference and an LLM evaluation rubric, plus a defense maintenance work package and an interface control document. All samples are original work; the systems, part numbers and data in them are fictional. No CUI, export-controlled (ITAR/EAR) or proprietary information is included. The Projects page covers ask-my-docs (a tested RAG tool with an MCP server), the Gainwell Technologies EDI companion guides, and the Jungle Decision Framework documentation site.
 
-Every sample opens with an "About this sample" box (audience, document type and standard, approach, how it was checked). The checks run in GitHub Actions on every push: the tutorial's code is executed, the ICD byte layout and the rubric's math are recomputed, and the OpenAPI file is linted and compared with the API reference page. Source: https://github.com/kopyk/ai-docs
+Every sample opens with an "About this sample" box (audience, document type and standard, approach, how it was checked). The checks run in GitHub Actions on every change: the tutorial's code is executed, the ICD byte layout and the rubric's math are recomputed, and the OpenAPI file is linted and compared with the API reference page. Source: https://github.com/kopyk/ai-docs
 
 ## AI documentation
 
@@ -18,8 +18,8 @@ Every sample opens with an "About this sample" box (audience, document type and 
 
 ## Projects and about
 
-- [Projects](https://ai.jordanyan.com/projects): ask-my-docs (56 tests, CI, Recall@4 10/10, MCP server, changelog), a Gainwell Technologies EDI companion-guide case study with links to the published PDFs, and the Jungle Decision Framework site.
-- [About](https://ai.jordanyan.com/about): Background, education, work status, how the site is built and checked, and contact details.
+- [Projects](https://ai.jordanyan.com/projects): ask-my-docs (56 tests, CI, Recall@4 10/10, MCP server, changelog), the Gainwell Technologies DC Medicaid EDI companion guides (Technical Writer, Feb 2025 – Feb 2026) with links to the published PDFs, and the Jungle Decision Framework site.
+- [About](https://ai.jordanyan.com/about): Jordan Yan, Technical Writer II at Zone 5 Technologies in San Luis Obispo, California, previously Technical Writer at Gainwell Technologies; B.A. in English, University of Houston; work status, how the site is built, and contact details.
 
 ## Optional
 

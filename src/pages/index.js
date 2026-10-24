@@ -177,7 +177,7 @@ export default function Home() {
         <header className={styles.hero}>
           <div className={clsx('container', styles.heroGrid)}>
             <div className={styles.heroCopy}>
-              <p className="eyebrow">Jordan Yan · Technical writer</p>
+              <p className="eyebrow">Jordan Yan · Technical Writer II, Zone 5 Technologies</p>
               <h1 className={styles.heroTitle}>AI and developer documentation</h1>
               <p className={styles.heroAbstract}>
                 Writing samples that show how I document AI systems and developer tools: what a
@@ -201,8 +201,7 @@ export default function Home() {
           <p className={styles.samplesNote}>
             <strong>About these samples.</strong> All samples are original work written for this
             portfolio. Systems, part numbers and data are fictional. No CUI, export-controlled
-            (ITAR/EAR) or proprietary information is included. The exception is the ask-my-docs
-            tool, which is real.
+            (ITAR/EAR) or proprietary information is included.
           </p>
 
           <Section
@@ -227,9 +226,8 @@ export default function Home() {
                 </span>
                 <span className={styles.featuredText}>
                   Ask questions about a folder of Markdown documentation and get answers from
-                  Claude, with sources. Includes a retrieval evaluation: with rare-word weighting,
-                  retrieval found the right file for 10 of 10 test questions in the top 4
-                  sections.
+                  Claude, with sources. 56 automated tests and a retrieval check run on every
+                  change; retrieval finds the right file for 10 of 10 test questions.
                 </span>
               </span>
               <span className={styles.featuredMore}>
