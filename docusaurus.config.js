@@ -28,7 +28,7 @@ const lightCodeTheme = {
 const config = {
   title: 'Jordan Yan · AI Documentation',
   tagline:
-    'Documentation samples for AI systems and developer tools, plus defense and aerospace technical writing.',
+    'Documentation samples for AI systems and developer tools.',
   favicon: 'img/favicon.svg',
 
   future: {
@@ -154,7 +154,7 @@ const config = {
         {
           name: 'description',
           content:
-            'Technical writing samples by Jordan Yan: AI model cards, RAG tutorials, API references, and evaluation rubrics, plus defense and aerospace documentation.',
+            'Technical writing samples by Jordan Yan: AI model cards, RAG tutorials, API references, and evaluation rubrics.',
         },
         {
           name: 'keywords',

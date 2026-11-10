@@ -40,8 +40,10 @@ update and edited and enhanced the 276/277 v1.1 guide, both published on Gainwel
 English from the University of Houston (December 2025).
 
 This site is where I show how I document AI systems and developer tools: a model card, a
-tutorial, an API reference and an evaluation rubric, plus a maintenance work package and an
-interface control document for defense and aerospace.
+tutorial, an API reference and an evaluation rubric. Two defense and aerospace samples, a
+maintenance work package and an interface control document, are here too. My safety and compliance samples
+(family safety guides, a COPPA explainer, and a policy and procedure set) are at
+[jordanyan.com/docs](https://www.jordanyan.com/docs).
 
 **Work status:** U.S. citizen; no current clearance; willing to undergo a background investigation.
 

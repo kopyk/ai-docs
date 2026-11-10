@@ -172,7 +172,7 @@ export default function Home() {
   return (
     <Layout
       title="AI and developer documentation"
-      description="Technical writing samples by Jordan Yan: AI model cards, RAG tutorials, API references, and evaluation rubrics, plus defense and aerospace documentation.">
+      description="Technical writing samples by Jordan Yan: AI model cards, RAG tutorials, API references, and evaluation rubrics.">
       <main>
         <header className={styles.hero}>
           <div className={clsx('container', styles.heroGrid)}>
@@ -202,6 +202,11 @@ export default function Home() {
             <strong>About these samples.</strong> All samples are original work written for this
             portfolio. Systems, part numbers and data are fictional. No CUI, export-controlled
             (ITAR/EAR) or proprietary information is included.
+          </p>
+          <p className={styles.samplesNote}>
+            <strong>Looking for safety and compliance writing?</strong> My family safety guides,
+            COPPA explainer, and policy and procedure set are at{' '}
+            <a href="https://www.jordanyan.com/docs">jordanyan.com/docs</a>.
           </p>
 
           <Section

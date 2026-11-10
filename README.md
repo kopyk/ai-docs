@@ -6,6 +6,10 @@ samples. The site is built with [Docusaurus](https://docusaurus.io/) 3.9 and has
 - **AI documentation:** model card, RAG tutorial, API reference, and LLM evaluation rubric
 - **Defense & aerospace:** maintenance procedure (work package) and interface control document
 
+Safety and compliance samples (family safety guides, a COPPA explainer, a policy and procedure set)
+are in [kopyk/portfolio](https://github.com/kopyk/portfolio) and published at
+[jordanyan.com/docs](https://www.jordanyan.com/docs).
+
 It also has a **Projects** page ([ask-my-docs](https://github.com/kopyk/ask-my-docs), the Gainwell
 Technologies EDI companion guides, and the Jungle Decision Framework site) and an **About** page. All
 samples are original work written for this portfolio. Systems, part numbers and data are fictional. No
